@@ -1,0 +1,7 @@
+FROM tensorflow/tensorflow:2.2.0
+RUN apt-get update && apt-get install git -y
+RUN pip install git+https://github.com/Teoroo-CMC/PiNN@TF2
+COPY ./python /opt/tips
+RUN pip install /opt/tips
+RUN echo 'PS1="tips/pinn> "' >> ~/.bashrc
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*

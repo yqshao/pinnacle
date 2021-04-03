@@ -1,0 +1,9 @@
+From  lammps/lammps:stable_29Oct2020_ubuntu18.04_openmpi_py3
+USER root
+RUN pip3 install pip --upgrade && pip install tensorflow==2.2.0
+COPY ./python /opt/tips
+RUN pip3 install /opt/tips
+RUN apt-get update && apt-get install locales -y && locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+RUN echo 'PS1="tips/lammps> "' >> ~/.bashrc

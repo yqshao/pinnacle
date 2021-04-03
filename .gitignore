@@ -1,0 +1,10 @@
+*.egg-info/
+__pycache__/
+*.sif
+work/
+.nextflow/
+.nextflow.log*
+.ipynb_checkpoints/
+/demo/trajs/
+/demo/models/
+/demo/datasets/

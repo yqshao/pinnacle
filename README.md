@@ -6,6 +6,7 @@ interatomic potentials.
 
 ## Installation
 
+TIPS is yet not published 
 A typical usage of TIPS is to use it for composing Nextflow workflows. In this
 case, it's sufficient to include the tips module in your nextflow script, e.g.:
 
@@ -46,10 +47,10 @@ Here, the `activeLearn` function constructs an
 
 ``` nextflow
 nextflow.enable.dsl=2
-include { aseDb, pinnTrainer, aseSampler,  activeLearn } from tips.nf
+include { dsConvert, pinnTrainer, aseSampler,  activeLearn } from tips.nf
 
 workflow {
-    data = aseDb('demo.db') 
+    data = dsConvert('demo.db', preprocess:true) 
     models, traj = activeLearn(
         pinnModel('pinet.yml'),
         cp2kModel('spce.lmp'), 
