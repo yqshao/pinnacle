@@ -1,5 +1,5 @@
 180
-Lattice="12.29793 0.0 0.0 0.0 12.29793 0.0 0.0 0.0 12.29793" Properties=species:S:1:pos:R:3:masses:R:1:momenta:R:3:id:I:1:type:I:1:travel:I:3:mol-id:I:1:initial_charges:R:1:mmcharges:R:1:bonds:S:1:angles:S:1 comment="LAMMPS data file via write_data, version 28 Feb 2019, timestep = 50000" pbc="T T T"
+Lattice="12.29793 0.0 0.0 0.0 12.29793 0.0 0.0 0.0 12.29793" Properties=species:S:1:pos:R:3:masses:R:1:momenta:R:3:id:I:1:type:I:1:travel:I:3:mol-id:I:1:initial_charges:R:1:mmcharges:R:1:bonds:S:1:angles:S:1 comment="LAMMPS data file via write_data" pbc="T T T"
 O        3.77109571       9.58061874       0.07270544      15.99940000      -0.00017038      -0.00057458      -0.00054585        1        2        0        1        1        1      -0.84760000      -0.84760000 _  _ 
 H        3.37416263      10.47433016       0.28183643       1.00790000      -0.00003098      -0.00005906       0.00002592        2        1        0        1        1        1       0.42380000       0.42380000 _  _ 
 H        3.08668668       9.00984455      11.91697954       1.00790000      -0.00001498      -0.00004076      -0.00002209        3        1        0        1        0        1       0.42380000       0.42380000 _  _ 

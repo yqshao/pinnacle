@@ -1,12 +1,39 @@
-site_name: TIPS documentation
+site_name: TIPS Documentation
 nav:
-  - Home: index.md
-  - Workflow: workflow.md
-  - TIPS CLI: cli.md
-  - Extending TIPS: extend.md
-plugins:
-  - mermaid2
+  - Introduction: index.md
+  - Roadmap: roadmap.md
+  - Workflow:
+    - Overview: workflow/overview.md
+    - Patterns: workflow/patterns.md
+    - Abstract: workflow/abstract.md
+    - Strategies:
+        - tips/explore: workflow/explore.md
+    - Implementions:
+        - tips/tips: workflow/tips.md
+        - tips/pinn: workflow/pinn.md
+        - tips/lammps: workflow/lammps.md
+        - tips/gromacs: workflow/gromacs.md
+    - Development:
+        - Environment: workflow/develop_env.md
+        - Custom process: workflow/custom_process.md
+  - CLI:
+    - Overview: cli/overview.md
+    - Commands:
+      - convert: cli/convert.md
+      - filter: cli/filter.md
+    - File formats:
+      - General: cli/formats.md
+      - LAMMPS: cli/lammps.md
 theme:
   name: material
+  features:
+    - navigation.sections
+    - toc.integrate
 markdown_extensions:
+  - attr_list
   - admonition
+  - pymdownx.snippets
+  - pymdownx.highlight
+  - pymdownx.superfences
+extra_css:
+  - css/extra.css

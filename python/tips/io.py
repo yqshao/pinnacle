@@ -122,7 +122,6 @@ ITEM: ATOMS id type x y z
     def finalize(self):
         self.f.close()
 
-
 class pinn_writer():
     def __init__(self, fname, spec):
         import os

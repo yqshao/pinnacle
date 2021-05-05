@@ -1,0 +1,11 @@
+include input.init
+read_data input.data
+include input.setting
+
+variable dump_format         string "id type x y z fx fy fz"
+variable dump_format_format string "'%d %d %.6f %.6f %.6f %.6e %.6e %.6e'"
+thermo   1
+dump     1 all custom 1 output.dump ${dump_format}
+log      output.log
+thermo_modify flush yes
+rerun    input.dump dump x y z
