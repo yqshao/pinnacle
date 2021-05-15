@@ -33,7 +33,7 @@ process pinnTrain {
     script:
     setup = getParams(trainDflts, inputs)
     """
-    tips convert ${fileList(setup.ds)} -o 'train:8,eval:2' --seed $setup.seed
+    tips convert ${fileList(setup.ds)} -o 'train:8,eval:2' -of pinn --seed $setup.seed
     if [ ! -f ${file(setup.inp)}/params.yml ];  then
         mkdir -p model; cp ${file(setup.inp)} model/params.yml
     else

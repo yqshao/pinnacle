@@ -34,7 +34,7 @@ process lammpsLabel {
     ln -s ${file(setup.lmpInit)} input.init
     ln -s ${file(setup.lmpData)} input.data
     ln -s ${file(setup.lmpSetting)} input.setting
-    tips convert ${file(setup.ds)} --emap '$remap' -o input -of lammps
+    tips convert ${file(setup.ds)} --emap '$remap' -o input -of dump
     $setup.lmpCmd -in ${file(setup.inp)} || echo LAMMPS aborted
     sed -i '/WARNING/d' output.log
     tips convert output.dump --log output.log -o output -of xyz\

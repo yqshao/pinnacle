@@ -1,26 +1,44 @@
 #!/usr/bin/env python3
 
-from ase.io import iread
-import contextlib
-import io
-import sys
-
 def read(filename, format='auto', log=None, emap=None, units='real'):
-    if filename.endswith('.yml'): #pinn handels yaml
+    from ase.io import iread
+    if format=='auto':
+        if filename.endswith('.yml'):
+            format='pinn'
+        elif filename.endswith('.dump'):
+            format='dump'
+
+    if format=='pinn':
         ds = pinn_reader(filename)
-    else: #ase handels the rest
-        kwargs = {}
-        if filename.endswith('dump'): kwargs['units']=units
-        ds = map(atoms2dict, iread(filename, **kwargs))
+    elif format=='dump':
+        ds = map(atoms2dict, iread(filename, units=units))
+        if log is not None:
+            update_energy = lambda struct, energy: dict(struct, e_data=energy)
+            energies = read_lammps_log(log, units=units )
+            ds = map(update_energy, ds, energies)
+    else:
+        ds = map(atoms2dict, iread(filename))
+
     if emap is not None:
         emap = {int(s.split(':')[0]):int(s.split(':')[1]) for s in emap.split(',')}
         map_elems = lambda data: dict(data, elems=[emap[e] for e in data['elems']])
         ds = map(map_elems, ds)
-    if log is not None:
-        update_energy = lambda struct, energy: dict(struct, e_data=energy)
-        energies = read_lammps_log(log, units=units )
-        ds = map(update_energy, ds, energies)
     return ds
+
+
+def get_writer(filename, format='xyz', **kwargs):
+    if format == 'pinn':
+        spec = {'elems':  {'shape':[None,],  'dtype':'int32'  },
+                'coord':  {'shape':[None,3], 'dtype':'float32'},
+                'cell':   {'shape':[3,3],    'dtype':'float32'},
+                'e_data': {'shape':[],       'dtype':'float32'},
+                'f_data': {'shape':[None,3], 'dtype':'float32'}}
+        return pinn_writer(f'{filename}.yml', spec)
+    elif format == 'dump':
+        return lammps_writer(f'{filename}.dump')
+    else:
+        return ase_writer(f'{filename}.{format}')
+
 
 def read_lammps_log(lammpsLog, units):
     """"Read lammps log file, for now we collect only TotEng"""
@@ -35,6 +53,7 @@ def read_lammps_log(lammpsLog, units):
                 yield convert(float(line.split()[idx]), 'energy', units, 'ASE')
             else:
                 break
+
 
 def pinn_reader(fname):
     """Load tfrecord dataset.
@@ -62,29 +81,13 @@ def pinn_reader(fname):
     return dataset.as_numpy_iterator()
 
 
-def get_writer(filename, format='pinn', **kwargs):
-    if format == 'pinn':
-        spec = {'elems':  {'shape':[None,],  'dtype':'int32'  },
-                'coord':  {'shape':[None,3], 'dtype':'float32'},
-                'cell':   {'shape':[3,3],    'dtype':'float32'},
-                'e_data': {'shape':[],       'dtype':'float32'},
-                'f_data': {'shape':[None,3], 'dtype':'float32'}}
-        return pinn_writer(f'{filename}.yml', spec)
-    elif format == 'lammps':
-        return lammps_writer(f'{filename}.dump')
-    elif format == 'xyz' or format == 'extxyz':
-        return extxyz_writer(f'{filename}.xyz')
-    else:
-        raise NotImplementedError
-
-
-class extxyz_writer():
+class ase_writer():
     def __init__(self, fname):
-        self.f = open(fname, 'w')
+        self.fname = fname
+        self.traj = []
 
     def add(self, data):
         from ase import Atoms
-        from ase.io import write
         from ase.calculators.singlepoint import SinglePointCalculator
         atoms = Atoms(data['elems'], cell=data['cell'], positions=data['coord'])
         atoms.calc = SinglePointCalculator(
@@ -92,10 +95,11 @@ class extxyz_writer():
             energy=data['e_data'],
             forces=data['f_data'])
         atoms.pbc=True
-        write(self.f, atoms, format='extxyz', append='True')
+        self.traj.append(atoms)
 
     def finalize(self):
-        self.f.close()
+        from ase.io import write
+        write(self.fname, self.traj)
 
 
 class lammps_writer():
@@ -161,11 +165,21 @@ class pinn_writer():
 
 
 def atoms2dict(atoms):
+    import numpy as np
+    try:
+        energy = atoms.get_potential_energy()
+    except:
+        energy = 0.0
+    try:
+        forces = atoms.get_forces()
+    except:
+        forces = np.zeros_like(atoms.positions)
+
     atomsDict = {
         'elems': atoms.numbers,
         'coord': atoms.positions,
         'cell': atoms.cell[:],
-        'f_data': atoms.get_forces(),
-        'e_data': atoms.get_potential_energy()
+        'f_data': forces,
+        'e_data': energy,
     }
     return atomsDict

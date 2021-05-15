@@ -18,6 +18,8 @@ setup(name='tips',
                         'numpy>1.3.0',
                         'ase>=3.19.0',
                         'pyyaml>=3.01'],
+      extra_require={
+          'tf': ['tensorflow>=2.0']},
       python_requires='>=3.6',
       entry_points={'console_scripts':
                     ['tips=tips.cli:main']}
