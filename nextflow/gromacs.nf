@@ -9,9 +9,9 @@ labelDflts = [:]
 labelDflts.subDir       = '.'
 labelDflts.inp          = null
 labelDflts.ds           = null
-labelDflts.gmxInp       = null
+labelDflts.gmxTop       = null
 labelDflts = getParams(labelDflts, params)
-process labeller {
+process gromacsLabel {
     label 'gromacs'
     publishDir {"$params.publishDir/$setup.subDir"}, mode: params.publishMode
 
@@ -25,13 +25,13 @@ process labeller {
     setup = getParams(labelDflts, inputs)
     """
     #!/usr/bin/env bash
-    ln -s ${file(setup.gmxTop)} input.init
+    ln -s ${file(setup.gmxTop)} input.top
     ln -s ${file(setup.inp)} input.mdp
     tips convert ${file(setup.ds)} -o input -of pdb
-    gmx grompp -f input.mdp -c input.pdb -p input.top -o input.tpr
+    gmx grompp -f input.mdp -c input.pdb -p input.top -o input.tpr --maxwarn 5
     gmx mdrun -s input.tpr -rerun input.pdb --deffnm output
-    gmx traj-conv -f output.trr -o output.pdb
-    tips convert output.pdb output.xyz
+    echo 4\\n0 | gmx energy -f output.edr -o energy.xvg
+    tips convert output.trr --top input.pdb --log energy.xvg -o output -of xyz
     """
 
     stub:
@@ -46,8 +46,9 @@ sampleDflts = [:]
 sampleDflts.subDir      = '.'
 sampleDflts.inp         = null
 sampleDflts.init        = null
+sampleDflts.gmxTop      = null
 sampleDflts = getParams(sampleDflts, params)
-process sampler {
+process gromacsSample {
     label 'gromacs'
     publishDir {"$params.publishDir/$setup.subDir"}, mode: params.publishMode
 
@@ -62,12 +63,12 @@ process sampler {
     """
     #!/usr/bin/env bash
     tips convert ${file(setup.init)} -o input -of pdb
-    ln -s ${file(setup.gmxTop)} input.init
+    ln -s ${file(setup.gmxTop)} input.top
     ln -s ${file(setup.inp)} input.mdp
-    gmx grompp -f input.mdp -c input.pdb -p input.top -o input.tpr
+    gmx grompp -f input.mdp -c input.pdb -p input.top -o input.tpr --maxwarn 5
     gmx mdrun -s input.tpr --deffnm output
-    gmx traj-conv -f output.trr -o output.pdb
-    tips convert output.pdb output.xyz
+    echo 4\\n0 | gmx energy -f output.edr -o energy.xvg
+    tips convert output.trr --top output.gro --log energy.xvg -o output -of xyz
     """
 
     stub:

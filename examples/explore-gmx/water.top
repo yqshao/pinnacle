@@ -1,0 +1,43 @@
+;
+;	File 'watsol.top' was generated
+;	By user: yunqi (4011895)
+;	On host: rackham2.uppmax.uu.se
+;	At date: Mon Oct  5 01:56:39 2020
+;
+;	This is a standalone topology file
+;
+;	Created by:
+;	                    :-) GROMACS - gmx pdb2gmx, 2019.6 (-:
+;
+;	Executable:   /sw/apps/gromacs/2019.6.th/rackham/bin/gmx
+;	Data prefix:  /sw/apps/gromacs/2019.6.th/rackham
+;	Working dir:  /domus/h1/yunqi/MD_LAB/inputs
+;	Command line:
+;	  gmx pdb2gmx -f watmono.pdb -o watmono.gro -p watsol.top -ff oplsaa -water spce
+;	Force field was read from the standard GROMACS share directory.
+;
+
+; Include forcefield parameters
+#include "oplsaa.ff/forcefield.itp"
+
+; Include water topology
+#include "oplsaa.ff/spce.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "oplsaa.ff/ions.itp"
+
+[ system ]
+; Name
+Protein in water
+
+[ molecules ]
+; Compound        #mols
+SOL                 1
+SOL               686

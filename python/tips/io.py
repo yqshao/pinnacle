@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
-def read(filename, format='auto', log=None, emap=None, units='real'):
+def read(filename, format='auto', log=None, emap=None, top=None, units='real'):
     from ase.io import iread
     if format=='auto':
         if filename.endswith('.yml'):
             format='pinn'
         elif filename.endswith('.dump'):
             format='dump'
+        elif filename.endswith('.trr'):
+            format='trr'
 
     if format=='pinn':
         ds = pinn_reader(filename)
@@ -15,6 +17,12 @@ def read(filename, format='auto', log=None, emap=None, units='real'):
         if log is not None:
             update_energy = lambda struct, energy: dict(struct, e_data=energy)
             energies = read_lammps_log(log, units=units )
+            ds = map(update_energy, ds, energies)
+    elif format=='trr':
+        ds = read_trr(filename, top)
+        if log is not None:
+            update_energy = lambda struct, energy: dict(struct, e_data=energy)
+            energies = read_gromacs_xvg(log)
             ds = map(update_energy, ds, energies)
     else:
         ds = map(atoms2dict, iread(filename))
@@ -38,6 +46,29 @@ def get_writer(filename, format='xyz', **kwargs):
         return lammps_writer(f'{filename}.dump')
     else:
         return ase_writer(f'{filename}.{format}')
+
+
+def read_trr(filename, top):
+    import MDAnalysis as mda
+    from ase.data import atomic_numbers
+    u = mda.Universe(top, filename)
+    elems = [atomic_numbers[e] for e in u.atoms.types]
+    for ts in u.trajectory:
+        data = {
+            'cell':   ts.triclinic_dimensions,
+            'elems':  elems,
+            'coord':  ts.positions,
+            'f_data': ts.forces,
+            'e_data': 0.0,
+        }
+        yield data
+
+
+def read_gromacs_xvg(fname):
+    import numpy as np
+    energies = np.loadtxt(fname, comments=['#','@'])[:,1]
+    for energy in energies:
+        yield energy # should be in kcal/mol
 
 
 def read_lammps_log(lammpsLog, units):

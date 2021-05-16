@@ -17,14 +17,15 @@ def version():
 @click.command(name='convert', context_settings=CONTEXT_SETTINGS, short_help='convert datasets')
 @click.argument('filename', nargs=-1)
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
+@click.option('--log', metavar='', default=None, help='gromacs/lammps log (for energies)')
+@click.option('--top', metavar='', default=None, help='gromacs topology')
+@click.option('--units', metavar='', default=None, help='lammps units')
+@click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
 @click.option('--shuffle', metavar='', default=True, help='shuffle the dataset')
 @click.option('--seed', metavar='', default='0',  type=int, help='seed for random number (int)')
-@click.option('--log', metavar='', default=None, help='lammps log (for energies)')
-@click.option('--units', metavar='', default=None, help='lammps units')
-@click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
-def convertds(filename, format, output, oformat, shuffle, seed, log, units, emap):
+def convertds(filename, format, output, oformat, shuffle, seed, log, units, emap, top):
     import itertools, random, math
     if ':' in output:
         split = True
@@ -36,7 +37,7 @@ def convertds(filename, format, output, oformat, shuffle, seed, log, units, emap
         writerList = itertools.repeat(writers[0])
 
     for fname in filename:
-        dataset = read(fname, format=format, log=log, emap=emap, units=units)
+        dataset = read(fname, format=format, log=log, emap=emap, units=units, top=top)
         if split:
             dataset, ds4count = itertools.tee(dataset)
             count = sum(1 for _ in ds4count)
@@ -52,7 +53,8 @@ def convertds(filename, format, output, oformat, shuffle, seed, log, units, emap
 
 @click.command(name='filter', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
 @click.argument('filename', nargs=-1)
-@click.option('--log', metavar='', default=None, help='lammps log (for energies)')
+@click.option('--log', metavar='', default=None, help='gromacs/lammps log (for energies)')
+@click.option('--top', metavar='', default=None, help='gromacs topology')
 @click.option('--units', metavar='', default=None, help='lammps units')
 @click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
@@ -63,7 +65,7 @@ def convertds(filename, format, output, oformat, shuffle, seed, log, units, emap
 @click.option('-vmax', '--val-max', metavar='', default='', help='maximum value')
 @click.option('-amin', '--abs-min', metavar='', default='', help='minimum absolute value')
 @click.option('-amax', '--abs-max', metavar='', default='', help='maximum absolute value')
-def filterds(filename, log, units, emap, format, output, oformat, algo, **kwargs):
+def filterds(filename, log, units, emap, format, output, oformat, algo, top, **kwargs):
     """\b
     Algorithms available:
     - 'naive': filter by the error tolerance
@@ -74,7 +76,7 @@ def filterds(filename, log, units, emap, format, output, oformat, algo, **kwargs
     from tips.filters import qbc_filter, naive_filter
 
     writer = get_writer(output, format=oformat)
-    datasets = [read(fname, log=log, format=format, emap=emap, units=units)
+    datasets = [read(fname, log=log, format=format, emap=emap, units=units, top=top)
                 for fname in filename]
     if algo=='qbc':
         ds = qbc_filter(zip(*datasets), **kwargs)

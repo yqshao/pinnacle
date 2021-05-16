@@ -1,0 +1,34 @@
+;Number(N), Volume(V), and Energy(E) esnemble
+;Run parameters
+integrator          =  md
+dt                  =  0.002    ; time step in ps !
+nsteps              =  50000    ; total 100ps. (dt * nsteps)
+
+;Output Control
+nstcomm             =  1
+nstxout             =  1000
+nstvout             =  1000
+nstfout             =  1000
+nstlog              =  1000
+nstenergy           =  1000
+
+; Setup neighboring list
+nstlist             =  10
+ns_type             =  grid
+rlist               =  1.0
+
+; Setup the force field
+constraints         =  all-bonds
+coulombtype         =  PME
+rcoulomb            =  1.0
+vdwtype             =  cut-off
+rvdw                =  1.0
+fourierspacing      =  0.06
+pme_order           =  4
+ewald_rtol          =  1e-5
+optimize_fft        =  yes
+
+; Generate velocities is on at 298 K.
+gen_vel             =  no
+gen_temp            =  298.0
+gen_seed            =  173529
