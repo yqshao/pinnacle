@@ -11,7 +11,7 @@ and sampler modules.
 - pyyaml >= 3.01
 
 In addition, tensorflow >= 2.0 is required to read and write tfrecord files used
-by PiNN.
+by PiNN and MDAnalysis required for reading Gromacs trr files.
 
 ## Installation
 
