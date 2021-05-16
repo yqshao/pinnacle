@@ -17,8 +17,10 @@ $ tips convert dsfile1 [dsfile2 ...] [options]
 | `--oformat [-of]`  | `'pinn'`    | format of output dataset         |
 | `--(no)shuffle`    | `False`     | shuffle dataset before splitting |
 | `--seed`           | `0`         | random seed if shufffle is used  |
-| `--units`          | `'real'`    | see [LAMMPS](lammps.md)          |
-| `--emap`           | `''`        | see [LAMMPS](lammps.md)          |
+| `--emap`           | `''`        | see [file formats](formats.md)   |
+| `--units`          | `'real'`    | see [file formats](formats.md)   |
+| `--log`            | `None`      | see [file formats](formats.md)   |
+| `--top`            | `None`      | see [file formats](formats.md)   |
 
 The input `dsfile` will be concatenated when converting. The outputs will be
 splitted if the output file is speficied as (e.g `train:8,test:2`). Note that

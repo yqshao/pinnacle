@@ -20,8 +20,10 @@ $ tips filter dsfile1 [dsfile2 ...] [options]
 | `--val-min [-vmin]` | `''`        | Minimum value, see below           |
 | `--abs-max [-amax]` | `''`        | Maximum absolute value, see below  |
 | `--abs-min [-amin]` | `''`        | Minimum absolute value, see below  |
-| `--units`           | `'real'`    | see [LAMMPS](lammps.md)            |
-| `--emap`            | `''`        | see [LAMMPS](lammps.md)            |
+| `--emap`            | `''`        | see [file formats](formats.md)     |
+| `--units`           | `'real'`    | see [file formats](formats.md)     |
+| `--log`             | `None`      | see [file formats](formats.md)     |
+| `--top`             | `None`      | see [file formats](formats.md)     |
     
 The filter tags are interpreted as comma separated `key:val` pairs. Structure is
 excluded if **any** of the condition is met, for instance `--vmax "e:-20",

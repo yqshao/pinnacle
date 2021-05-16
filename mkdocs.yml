@@ -21,9 +21,7 @@ nav:
     - Commands:
       - convert: cli/convert.md
       - filter: cli/filter.md
-    - File formats:
-      - General: cli/formats.md
-      - LAMMPS: cli/lammps.md
+    - File formats: cli/formats.md
 theme:
   name: material
   features:
