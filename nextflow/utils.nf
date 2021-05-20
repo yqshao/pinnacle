@@ -21,7 +21,9 @@ def iterUntil(source, condition) {
     def result = source0.mix(feedback.filter{!condition(it)}
                              .map{[it[0]+[iter:it[0].iter+1], it[1]]})
     source0.count()
-        .combine(feedback.filter{condition(it)}
+        .combine(feedback
+                 .map{it[0].target ? [it[0].target]: [it[0]]}
+                 .filter{condition(it)}
                  .unique{it[0].findAll{k,v->k!='iter'}})
         .reduce(0){a,b->
             if(a+1==b[0]){CH.close0(feedback)}; return a+1}

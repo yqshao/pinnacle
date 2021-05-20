@@ -18,7 +18,8 @@ process tipsFilter {
     tuple val(meta), val(inputs)
 
     output:
-    tuple val(meta), path('output.xyz')
+    tuple val(meta), path('output.xyz'), emit: out
+    path('output.idx'), emit: idx
 
     script:
     setup = getParams(defaults, inputs)

@@ -57,16 +57,16 @@ workflow explore {
     // // the actual work for each iteraction
     trainInp   = trainDs.join(trainCkpt).join(trainSteps).map{[it[0], [ds:it[1].ds]+it[2]+[genDress:it[0].iter==1, maxSteps:it[3].maxSteps]]}
     models     = trainer(trainInp.map{[it[0],it[1]+[subDir:"${it[0].subDir}/models/iter${it[0].iter}/seed${it[0].seed}"]]})
-    sampleInp  = sampleParams.join(models).filter{it[0].seed==1}.map{[it[0], it[1]+[inp:it[2]]]}
+    sampleInp  = sampleParams.join(models.filter{it[0].seed==1}).map{[it[0], it[1]+[inp:it[2]]]}
     traj       = sampler(sampleInp.map{[it[0],it[1]+[subDir:"${it[0].subDir}/trajs/iter${it[0].iter}"]]})
-    qbcInps    = traj.flatMap{(1..it[0].seeds).collect(seed->[it[0]+[seed:seed], it[1]])}
-        .join(models.filter{it[0].seed!=1}).map{[it[0], [ds:it[1], inp:it[2], subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/qbclabel${it[0].seed}"]]}
+    qbcInps    = models.filter{it[0].seed!=1}.join(traj.flatMap{(2..it[0].seeds).collect(seed->[it[0]+[seed:seed], it[1]])})
+                       .map{[it[0], [ds:it[2], inp:it[1], subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/qbclabel${it[0].seed}"]]}
     qbcLabels  = traj.mix(qbcLabel(qbcInps)).map{meta,inp -> [groupKey(meta+[seed:1],meta.seeds), inp]}.groupTuple()
-    toLabel    = qbcFilter(qbcLabels.map{[it[0], [ds:it[1], subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/qbcfilter"]]})
+    toLabel    = qbcFilter(qbcLabels.map{[it[0], [ds:it[1], subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/qbcfilter"]]}).out
     labelInp2  = labelInp.join(toLabel).map{[it[0], it[1]+[ds:it[2], subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/label"]]}
     labels     = labeller(labelInp2).map{[it[0], [ds:it[1]]]}
-    augDs      = augFilter(labels.map{[it[0],it[1]+[subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/filter"]]})
-    restart    = resFilter(labels.map{[it[0],it[1]+[subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/restart"]]})
+    augDs      = augFilter(labels.map{[it[0],it[1]+[subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/filter"]]}).out
+    restart    = resFilter(labels.map{[it[0],it[1]+[subDir:"${it[0].subDir}/trajs/iter${it[0].iter}/restart"]]}).out
 
     // prepare for the next iteration
     setNext(nextDs,     trainDs.join(augDs).flatMap{(1..it[0].seeds).collect{seed->[it[0]+[seed:seed], it[1]+[ds:([]<<it[1].ds<<it[2]).flatten()]]}})
