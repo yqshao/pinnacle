@@ -13,6 +13,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Deploy docs
-        uses: yqshao/mkdocs-deploy-gh-pages@master
+        uses: yqshao/mkdocs-material@y7.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

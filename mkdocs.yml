@@ -27,6 +27,11 @@ theme:
   features:
     - navigation.sections
     - toc.integrate
+plugins:
+  - mike
+extra:
+  version:
+    provider: mike
 markdown_extensions:
   - attr_list
   - admonition
