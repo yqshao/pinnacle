@@ -12,13 +12,13 @@ trainDflts.inp               = null
 trainDflts.ds                = null
 trainDflts.seed              = 0
 trainDflts.maxSteps          = '1000000'
-trainDflts.genDress          = true
+trainDflts.init              = true
 trainDflts.pinnCache         = 'True'
 trainDflts.pinnBatch         = '10'
 trainDflts.pinnCkpts         = '1'
 trainDflts.pinnShuffle       = '500'
-trainDflts.pinnLogSteps      = '1000'
-trainDflts.pinnCkptSteps     = '10000'
+trainDflts.pinnLogEvery      = '1000'
+trainDflts.pinnCkptEvery     = '10000'
 trainDflts = getParams(trainDflts, params)
 process pinnTrain {
     label 'pinn'
@@ -39,16 +39,16 @@ process pinnTrain {
     else
         cp -r ${file(setup.inp)} model; rm -r model/events* model/eval
     fi
-    pinn_train --model-dir='model' --params-file='model/params.yml'\
-        --train-data='train.yml' --eval-data='eval.yml'\
+    pinn train model/params.yml --model-dir='model' \
+        --train-ds='train.yml' --eval-ds='eval.yml'\
         --cache-data=$setup.pinnCache\
-        --batch-size=$setup.pinnBatch\
+        --batch=$setup.pinnBatch\
         --shuffle-buffer=$setup.pinnShuffle\
         --train-steps=$setup.maxSteps\
         --max-ckpts=$setup.pinnCkpts\
-        --log-steps=$setup.pinnLogSteps\
-        --ckpt-steps=$setup.pinnCkptSteps\
-        ${setup.genDress? "--regen-dress": ""}
+        --log-every=$setup.pinnLogEvery\
+        --ckpt-every=$setup.pinnCkptEvery\
+        ${setup.init? "--init": ""}
     """
 
     stub:
