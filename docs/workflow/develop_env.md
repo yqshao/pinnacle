@@ -23,9 +23,10 @@ set up python a virtual environment for development.
 
 ```shell
 # load available modules on HPC to avoid extra dependency
-module load GCC/8.3.0  CUDA/10.1.243  OpenMPI/3.1.4\
-  TensorFlow/2.3.1-Python-3.7.4 PyYAML  matplotlib
-virtualenv --system-site-packages tips_env 
+module load GCC/10.2.0  CUDA/11.1.1  OpenMPI/4.0.5\
+  TensorFlow/2.4.1 PyYAML  matplotlib
+virtualenv --system-site-packages $HOME/tips_env
+source $HOME/tips_env/bin/activatethe environment
 # install the python packages, suppose we work on both TIPS and PiNN
 git clone https://github.com/yqshao/tips.git
 git clone https://github.com/yqshao/PiNN.git -b TF2
@@ -41,7 +42,7 @@ profiles {
     process {
       executor = 'slurm'
       params.lmpCmd = 'singularity exec docker://lammps/lammps lmp_serial'
-      module = 'GCC/8.3.0:CUDA/10.1.243:OpenMPI/3.1.4:TensorFlow/2.3.1-Python-3.7.4:PyYAML:matplotlib:GROMACS'
+      module = 'GCC/10.2.0:CUDA/11.1.1:OpenMPI/4.0.5:TensorFlow/2.4.1:PyYAML:matplotlib:GROMACS'
       beforeScript = 'source $HOME/tips_env/bin/activate'
       clusterOptions = '--gres=gpu:T4:1'
       withLabel: tips {
