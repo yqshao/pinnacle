@@ -3,16 +3,38 @@ on:
   push:
     branches:
       - master
-
 jobs:
   build:
     name: Deploy docs
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout master
+      - name: Checkout repo
         uses: actions/checkout@v2
-
+        with:
+          fetch-depth: 0 # see https://github.com/jimporter/mike/issues/28
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache Env
+        uses: actions/cache@v2
+        with:
+          path: ./.venv
+          key: ${{ runner.os }}-venv-py3.9-${{ hashFiles('./docs/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-py3.9-${{ hashFiles('./docs/requirements.txt') }}
+            ${{ runner.os }}-
+      - name: Install dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python3 -m venv ./.venv
+          . ./.venv/bin/activate
+          pip install -r ./docs/requirements.txt
+      - name: Configure Git user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
       - name: Deploy docs
-        uses: yqshao/mkdocs-material@y7.1.4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          . ./.venv/bin/activate
+          mike deploy ${GITHUB_REF##*/} -b gh-pages -p
