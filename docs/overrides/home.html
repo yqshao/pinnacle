@@ -1,0 +1,62 @@
+{% extends "main.html" %}
+{% block tabs %}
+{{ super() }}
+<style>
+
+  .md-main {
+      flex-grow: 0
+  }
+
+  .md-main__inner {
+      display: flex;
+      height: 100%;
+  }
+
+  .mdx-container {
+      padding-top: .0rem;
+  }
+
+  .mdx-hero {
+      margin: 32px 2.8rem;
+      justify-content: center;
+  }
+
+  .mdx-hero h1 {
+      margin-bottom: 1rem;
+      color:  var(--md-primary-fg-color);
+      font-weight: 700;
+  }
+
+  .mdx-hero__content {
+      padding-bottom: 1rem;
+      margin: 0 auto;
+  }
+
+  .top-hr {
+      margin-top: 42px;
+  }
+
+</style>
+
+<!-- Main site Entry button descriptions -->
+<section class="mdx-container">
+  <div class="md-grid md-typeset">
+    <div class="mdx-hero">
+      <div class="mdx-hero__content">
+        <h1> Data Driven Atomistic Machine Learning Workflows</h1>
+        <p> Reproducible and scalable training and sampling workflows at your fingertips.<p>
+          <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}" class="md-button md-button--primary">
+            Get started
+          </a>
+          <a href="{{ config.repo_url }}" title="{{ lang.t('source.link.title') }}" class="md-button">
+            GitHub Repo
+          </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% endblock %}
+{% block content %}{% endblock %}
+{% block footer %}{% endblock %}

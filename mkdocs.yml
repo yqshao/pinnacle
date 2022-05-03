@@ -1,42 +1,74 @@
-site_name: TIPS Documentation
+site_name: The Interatomic Potential Suite
+repo_url: https://github.com/teoroo-cmc/tips
+repo_name: Teoroo-CMC/TIPS
 nav:
-  - Introduction: index.md
-  - Roadmap: roadmap.md
-  - Workflow:
-    - Overview: workflow/overview.md
-    - Patterns: workflow/patterns.md
-    - Abstract: workflow/abstract.md
-    - Strategies:
-        - tips/explore: workflow/explore.md
-    - Implementions:
-        - tips/tips: workflow/tips.md
-        - tips/pinn: workflow/pinn.md
-        - tips/lammps: workflow/lammps.md
-        - tips/gromacs: workflow/gromacs.md
-    - Development:
-        - Environment: workflow/develop_env.md
-        - Custom process: workflow/custom_process.md
-  - CLI:
-    - Overview: cli/overview.md
-    - Commands:
-      - convert: cli/convert.md
-      - filter: cli/filter.md
-    - File formats: cli/formats.md
+  - Home: index.md
+  - Get started:
+      - Installation: start/install.md
+      - Your first workflow: start/first_workflow.md
+      - Configure your run: start/configure.md
+      - License: start/license.md
+      - Resources:
+          - Getting help: start/help.md
+          - Alternatives: start/alternatives.md
+          - References: start/references.md
+  - Recipes:
+      - Training: recipe/train.md
+      - Active learning: recipe/active.md
+      - Benchmarking: recipe/benchmark.md
+      - Modules:
+          - TIPS: module/tips.md
+          - PiNN: module/pinn.md
+          - CP2K: module/cp2k.md
+          - LAMMPS: module/lammps.md
+          - GROMACS: module/gromacs.md
+          - Misc: module/misc.md
+  - Library:
+      - Overview: library.md
+      - File formats: formats.md
+      - CLI Commands:
+          - "tips bias": cli/bias.md
+          - "tips convert": cli/convert.md
+          - "tips subsample": cli/subsample.md
+          - "tips wizard": cli/wizard.md
+      - Python API:
+          - "tips.io": python/io.md
+          - "tips.bias": python/convert.md
+          - "tips.subsample": python/subsample.md
+          - "tips.reduction": python/reduction.md
+  - Develop:
+      - Overview: develop.md
+      - Writing you own:
+          - Modules: dev/modules.md
+          - Recipies: dev/patterns.md
+          - Datasets: dev/datasets.md
+      - Contributing:
+          - Developer setup: dev/setup.md
+          - Guideline: dev/guideline.md
 theme:
   name: material
+  logo: assets/logo.svg
+  favicon: assets/favicon.png
+  custom_dir: docs/overrides
   features:
+    - navigation.tabs
     - navigation.sections
-    - toc.integrate
 plugins:
+  - search
   - mike
+  - bibtex:
+      bib_file: "docs/references.bib"
 extra:
   version:
     provider: mike
 markdown_extensions:
   - attr_list
+  - footnotes
   - admonition
   - pymdownx.snippets
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 extra_css:
   - css/extra.css
