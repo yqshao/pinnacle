@@ -39,9 +39,10 @@ nav:
   - Develop:
       - Overview: develop.md
       - Writing you own:
-          - Modules: dev/modules.md
-          - Recipies: dev/patterns.md
-          - Datasets: dev/datasets.md
+          - Format: dev/format.md
+          - Dataset: dev/dataset.md
+          - Module: dev/module.md
+          - Recipie: dev/pattern.md
       - Contributing:
           - Developer setup: dev/setup.md
           - Guideline: dev/guideline.md
@@ -68,6 +69,8 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.tabbed:
       alternate_style: true
 extra_css:
