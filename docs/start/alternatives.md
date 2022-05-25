@@ -5,6 +5,11 @@ that shares some purposes with TIPS (benchmarking MLPs or active learning with
 MLPs). If you are not sure about TIPS, maybe it will help you to evaluate the
 alternatives.
 
+## OpenMM
+
+For classical force fields, OpenMM is a library 
+https://openmm.org/ecosystem
+
 ## DP-GEN
 
 DP-GEN is possibly one of the earliest open-source code that automates the
