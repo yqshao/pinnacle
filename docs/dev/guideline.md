@@ -1,5 +1,7 @@
-# Documentation under construction
+# Contributing Guidline
 
-!!! warning
+## Python coding convention
 
-    This is a placeholder for future documentation.
+The Python module of TIPS follows the [black](https://github.com/psf/black) convention.
+
+##
