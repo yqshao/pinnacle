@@ -12,16 +12,16 @@ nav:
           - Getting help: start/help.md
           - Alternatives: start/alternatives.md
           - References: start/references.md
-  - Recipes:
-      - Training: recipe/train.md
-      - Active learning: recipe/active.md
-      - Benchmarking: recipe/benchmark.md
+  - Workflow:
+      - Overview: recipe/overview.md
+      - Recipes:
+           - Benchmarking: recipe/benchmark.md
+           - Active learning: recipe/active.md
       - Modules:
           - TIPS: module/tips.md
-          - PiNN: module/pinn.md
           - CP2K: module/cp2k.md
+          - ASE: module/ase.md
           - LAMMPS: module/lammps.md
-          - GROMACS: module/gromacs.md
           - Misc: module/misc.md
   - Library:
       - Overview: library.md
