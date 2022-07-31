@@ -11,15 +11,9 @@ universal data loader `load_ds`:
     ```Python
     from tips.io import load_ds
     
-    ds = load_ds('cp2k-pos-1.xyz',
-                 frc='cp2k-frc-1.xyz',
-                 cell='cp2k-cell.dat',
-                 fmt='cp2k')
+    ds = load_ds('path/to/dataset', fmt=deepmd-raw')
 
-    # data can be splitted, converted
-    ds.split({'train':8, 'test':2})
-    ds.convert('export.xyz', fmt='ext-xyz')
-    print(ds)
+    ds.convert('dataset.yml', fmt='pinn')
     ```
 
 
@@ -28,13 +22,15 @@ universal data loader `load_ds`:
     ```Python
     # printing the  dataset shows basic information about the dataset
     <tips.io.Dataset:
-     size: 50
-     format: 'CP2K outputs'
-     indexable: True
-     structure:
-       - elems: ?, int32
-       - coord: ?x3, float32
-       - cell: 3x3, float32>
+     fmt: DeePMD raw
+     size: 100
+     elem: 8, 1
+     spec:
+         cell: 3x3, float
+         elem: [None], int
+         force: [None, 3], float
+         coord: [None, 3], float
+         energy: [], float>
     ```
 
 Detailed descriptions about the `Dataset` object can be found in its [API documentation]().
@@ -42,16 +38,17 @@ Detailed descriptions about the `Dataset` object can be found in its [API docume
 
 ## Available formats
 
-!!! warning "Check marks are planned implementations for now"
+!!! warning "Check: implemented; No-entry: not implemented yet; Empty: not-planned"
 
 | Format  | Read               | Convert            | Note                           |
 |---------|--------------------|--------------------|--------------------------------|
-| ase     | :white_check_mark: | :white_check_mark: | ASE Atoms objects              |
-| cp2k    | :white_check_mark: |                    | CP2K data (pos, frc, and cell) |
-| deepmd  | :white_check_mark: | :white_check_mark: | DeePMD format                  |
-| ext-xyz | :white_check_mark: | :white_check_mark: | Extended XYZ format            |
-| lammps  | :white_check_mark: | :white_check_mark: | LAMMPS dump format             |
-| runner  | :white_check_mark: | :white_check_mark: | RuNNer format                  |
+| ase     | :no_entry_sign:    | :no_entry_sign:    | ASE Atoms objects              |
+| cp2k    | :no_entry_sign:    |                    | CP2K data (pos, frc, and cell) |
+| deepmd  | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
+| ext-xyz | :no_entry_sign:    | :no_entry_sign:    | Extended XYZ format            |
+| lammps  | :no_entry_sign:    |                    | LAMMPS dump format             |
+| pinn    | :no_entry_sign:    | :white_check_mark: | PiNN-style TFRecord format     |
+| runner  | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
 
 ## Custom reader/writer
 
