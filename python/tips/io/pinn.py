@@ -60,6 +60,5 @@ def ds2pinn(ds, fname):
         "n_sample": ds.meta["size"],
         "elems": [int(e) for e in list(ds.meta["elem"])],
     }
-    print(info_dict, spec)
     with open(fname, "w") as f:
         yaml.safe_dump({"format": spec, "info": info_dict}, f)

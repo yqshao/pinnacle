@@ -28,17 +28,19 @@ class Dataset:
             raise NotImplementedError("The dataset is not indexible")
 
         if isinstance(key, slice):
-            keys = list(range(self.meta['size']))[key]
+            keys = list(range(self.meta["size"]))[key]
             meta = deepcopy(self.meta)
             meta["size"] = len(keys)
             meta["fmt"] = "TIPS sliced"
+
             def new_indexer(i):
                 return self.indexer(keys[i])
+
             return Dataset(indexer=new_indexer, meta=meta)
         elif isinstance(key, int):
-            if key <0:
-                key = key+self.meta["size"]
-            if key >= self.meta["size"] or key<0:
+            if key < 0:
+                key = key + self.meta["size"]
+            if key >= self.meta["size"] or key < 0:
                 raise IndexError("Index out of range.")
             return self.indexer(key)
         else:
@@ -48,13 +50,15 @@ class Dataset:
         return self.generator()
 
     def __repr__(self):
+        from ase.data import chemical_symbols
+
         spec_repr = "\n     ".join(
             f"{k}: {v['shape']}, {v['dtype']}" for k, v in self.meta["spec"].items()
         )
         repr = f"""<tips.io.Dataset
  fmt: {self.meta['fmt']}
  size: {self.meta['size']}
- elem: {self.meta['elem']}
+ elem: {', '.join(chemical_symbols[i] for i in sorted(self.meta['elem']))}
  spec:
      {spec_repr}>"""
         return repr
@@ -102,9 +106,11 @@ class Dataset:
         meta["size"] = self.meta["size"] + ds.meta["size"]
         meta["elem"] = self.meta["elem"].union(ds.meta["elem"])
         if self.indexer is not None and ds.indexer is not None:
+
             def indexer(i):
                 if i < self.meta["size"]:
                     return self.indexer(i)
                 else:
                     return ds.indexer(i - self.meta["size"])
+
             return Dataset(indexer=indexer, meta=meta)

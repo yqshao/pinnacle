@@ -23,7 +23,7 @@ def list_loader(func):
 
     @wraps(func)
     def wrapper(path, *args, **kwargs):
-        if isinstance(path, Iterable):
+        if isinstance(path, Iterable) and not isinstance(path, str):
             all_ds = [func(p, *args, **kwargs) for p in path]
             return reduce(lambda x, y: x.join(y), all_ds)
         else:
