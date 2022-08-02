@@ -43,7 +43,7 @@ Detailed descriptions about the `Dataset` object can be found in its [API docume
 | Format  | Read               | Convert            | Note                           |
 |---------|--------------------|--------------------|--------------------------------|
 | ase     | :no_entry_sign:    | :no_entry_sign:    | ASE Atoms objects              |
-| cp2k    | :no_entry_sign:    |                    | CP2K data (pos, frc, and cell) |
+| cp2k    | :white_check_mark: |                    | CP2K data (pos, frc, and cell) |
 | deepmd  | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
 | ext-xyz | :no_entry_sign:    | :no_entry_sign:    | Extended XYZ format            |
 | lammps  | :no_entry_sign:    |                    | LAMMPS dump format             |

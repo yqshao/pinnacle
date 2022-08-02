@@ -3,11 +3,13 @@
 from .dataset import Dataset
 from .runner import ds2runner
 from .pinn import ds2pinn
+from .cp2k import load_cp2k
 from .deepmd import load_deepmd_raw
 
 
 loaders = {
-    'deepmd-raw': load_deepmd_raw
+    'deepmd-raw': load_deepmd_raw,
+    'cp2k': load_cp2k
 }
 
 convertors = {
