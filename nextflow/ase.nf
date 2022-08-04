@@ -35,7 +35,7 @@ process aseMD {
         'dt': 0.5, # timestep is fs
         'taut': 100,
         'taup': 1000,
-        'log-every': 5, # log interval in fs
+        'log-every': 5, # log interval in steps
         'pressure': 1, # pressure in bar
         'compressibility': 4.57e-4
       }
@@ -58,9 +58,13 @@ process aseMD {
       atoms = read("$init")
       atoms.set_calculator(calc)
       MaxwellBoltzmannDistribution(atoms, T*units.kB)
+
       if ensemble == 'npt':
           dyn = NPTBerendsen(atoms, timestep=dt, temperature=T, pressure=pressure,
                         taut=dt * taut, taup=dt * taup, compressibility=compressibility)
+      if ensemble == 'nvt':
+          dyn = NVTBerendsen(atoms, timestep=dt, temperature=T, taut=dt * taut)
+
       dyn.attach(
           MDLogger(dyn, atoms, 'asemd.log',stress=True, mode="w"),
           interval=int(every))

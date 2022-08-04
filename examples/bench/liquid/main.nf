@@ -22,7 +22,7 @@ params.asemd_init = './inputs/init.xyz'
 // below are addition parameters that might be ajusted
 params.repeats = 5
 params.pinn_flags = '--train-steps 5000000 --log-every 5000 --ckpt-every 100000 --batch 1 --max-ckpts 1 --shuffle-buffer 1000 --init'
-params.ase_flags = '--ensemble npt --T 373 --t 100 --dt 0.5 --every 10'
+params.ase_flags = '--ensemble npt --T 373 --t 100 --dt 0.5 --log-every 10'
 params.rdf_flags = '--tags O-O,O-H --rc 5 '
 params.log_flags = '--tags density'
 
