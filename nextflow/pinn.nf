@@ -22,7 +22,7 @@ process pinnTrain {
       if [ ! -f $input/params.yml ];  then
           mkdir -p model; cp $input model/params.yml
       else
-          cp -r $input model; rm -r model/events* model/eval
+          cp -rL $input model
       fi
       pinn train model/params.yml --model-dir='model'\
           --train-ds='train.yml' --eval-ds='eval.yml'\
