@@ -114,3 +114,24 @@ class Dataset:
                     return ds.indexer(i - self.meta["size"])
 
             return Dataset(indexer=indexer, meta=meta)
+
+    def filter(self, func):
+        """Filter the dataset with a boolean function
+
+        Args:
+            func: a function that takes a datum and returns a bool
+
+        Return:
+            filtered dataset
+        """
+        assert set(self.meta["spec"].keys()) == set(self.meta["spec"].keys())
+        meta = deepcopy(self.meta)
+        meta["fmt"] = "TIPS filtered"
+        meta["size"] = None
+
+        def generator():
+            for datum in self.generator():
+                if func(datum):
+                    yield datum
+
+        return Dataset(generator=generator, meta=meta)
