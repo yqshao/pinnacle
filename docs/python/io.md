@@ -12,8 +12,9 @@ universal data loader `load_ds`:
     from tips.io import load_ds
     
     ds = load_ds('path/to/dataset', fmt=deepmd-raw')
-
-    ds.convert('dataset.yml', fmt='pinn')
+    ds = ds.join(ds) # datasets can be joined together 
+    ds.convert('dataset.yml', fmt='pinn') # the and converted to different formats
+    print(ds)
     ```
 
 
