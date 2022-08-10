@@ -6,7 +6,7 @@ process aseMD {
 
     input:
       val tag
-      path model
+      path model, stageAs: 'model*'
       path init
       val flags
       val publish
@@ -25,19 +25,20 @@ process aseMD {
       from ase.io import read
       from ase.io.trajectory import Trajectory
       from ase.md import MDLogger
+      from ase.calculators.mixing import AverageCalculator
       from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
       from ase.md.nptberendsen import NPTBerendsen
 
       setup = {
-        'ensemble': 'npt',
-        'T': 373,
+        'ensemble': 'npt', # ensemble
+        'T': 373, # temperature in K
         't': 100, # time in ps
         'dt': 0.5, # timestep is fs
-        'taut': 100,
-        'taup': 1000,
+        'taut': 100, # thermostat damping in steps
+        'taup': 1000, # barastat dampling in steps
         'log-every': 5, # log interval in steps
         'pressure': 1, # pressure in bar
-        'compressibility': 4.57e-4
+        'compressibility': 4.57e-4 # compressibility in bar^{-1}
       }
       flags = {
         k: v for k,v in
@@ -54,7 +55,14 @@ process aseMD {
       pressure=float(setup['pressure'])
       compressibility=float(setup['compressibility'])
 
-      calc = pinn.get_calc("$model")
+      ${(model instanceof Path) ?
+      "calc = pinn.get_calc('$model')" :
+      """
+      models = ["${model.join('", "')}"]
+      calcs = [pinn.get_calc(model) for model in models]
+      calc = AverageCalculator(calcs)
+      """}
+
       atoms = read("$init")
       atoms.set_calculator(calc)
       MaxwellBoltzmannDistribution(atoms, T*units.kB)
