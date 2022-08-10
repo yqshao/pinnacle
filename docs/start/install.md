@@ -11,7 +11,7 @@ newcomers, it's recommanded to install the TIPS CLI, via the `pip` command:
 === "Command"
 
     ```bash
-    pip install git+https://teoroo-cmc.github.com/tips
+    pip install 'git+https://github.com/yqshao/tips.git#egg=tips&subdirectory=python'
     ```
 
 ## First step

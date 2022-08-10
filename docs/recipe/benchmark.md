@@ -41,7 +41,7 @@ workflows, to futher tweak it, please refer to the annotated `main.nf` and
 
 === "nextflow.config"
 
-    ```groovygg
+    ```groovy
     profiles {
       standard {
         process {
