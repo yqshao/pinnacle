@@ -47,7 +47,7 @@ Detailed descriptions about the `Dataset` object can be found in its [API docume
 | cp2k    | :white_check_mark: |                    | CP2K data (pos, frc, and cell) |
 | deepmd  | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
 | ext-xyz | :no_entry_sign:    | :no_entry_sign:    | Extended XYZ format            |
-| lammps  | :no_entry_sign:    |                    | LAMMPS dump format             |
+| lammps  | :white_check_mark: |                    | LAMMPS dump format             |
 | pinn    | :no_entry_sign:    | :white_check_mark: | PiNN-style TFRecord format     |
 | runner  | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
 

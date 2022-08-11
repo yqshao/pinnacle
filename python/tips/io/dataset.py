@@ -135,3 +135,50 @@ class Dataset:
                     yield datum
 
         return Dataset(generator=generator, meta=meta)
+
+    def map_elems(self, emap):
+        """Maps the elements of a dataset according to some typing rule
+
+        Args:
+            emap: a dict or a LAMMPS data file
+
+        Return:
+            mapped dataset
+        """
+        import numpy as np
+        from ase.data import atomic_masses
+
+        if isinstance(emap, dict):
+            edict = emap
+
+        edict = {}
+        with open(emap) as f:
+            while True:
+                l = f.readline()
+                if l.startswith("Masses"):
+                    break
+            f.readline()
+            while True:
+                line = f.readline().split()
+                if len(line) == 0:
+                    break
+                else:
+                    idx = int(line[0])
+                    mass = float(line[1])
+                    edict[idx] = max(1, np.argmin(np.abs(atomic_masses - mass)))
+        def mapper(datum):
+            datum = datum.copy()
+            datum["elem"] = [edict[i] for i in datum["elem"]]
+            return datum
+        meta = deepcopy(self.meta)
+        meta["fmt"] = "TIPS mapped"
+        meta["elem"] = set([edict[i] for i in meta["elem"]])
+        if self.indexer is None:
+            def generator():
+                for datum in self.generator():
+                    yield mapper(datum)
+            return Dataset(generator=generator, meta=meta)
+        else:
+            def indexer(i):
+                return mapper(self.indexer(i))
+            return Dataset(indexer=indexer, meta=meta)
