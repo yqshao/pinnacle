@@ -1,4 +1,4 @@
-#  ASE workflows
+# ASE workflows
 
 ## aseMD
 
@@ -11,7 +11,7 @@ workflow.
 ### Channels
 
 | Channel    | Type | Note                                                                |
-|------------|------|---------------------------------------------------------------------|
+| ---------- | ---- | ------------------------------------------------------------------- |
 | (in) name  | val  | an id to identify the process                                       |
 | (in) model | file | trained ANN model, can be a list of models                          |
 | (in) flags | val  | a string specifying the MD simulation see [options](#options) below |
@@ -25,18 +25,17 @@ workflow.
 The MD specifics for aseMD is specified as a string of flags in the form of
 `--option1 val1 --option2 val`, the available options and default valeus are down below.
 
-| Option              | Default     | Note                                   |
-|---------------------|-------------|----------------------------------------|
-| `--ensemble       ` | `'nvt'    ` | `'npt'` or `'nvt'`                     |
-| `--T              ` | `273    `   | Temperature in K                       |
-| `--t              ` | `100    `   | Time in ps                             |
-| `--dt             ` | `0.5    `   | Time step in fs                        |
-| `--taut           ` | `100    `   | Damping factor for thermostat in steps |
-| `--taup           ` | `1000   `   | Damping factor for barostat in steps   |
-| `--log-every      ` | `5      `   | Log interval in steps                  |
-| `--pressure       ` | `1      `   | pressure in bar                        |
-| `--compressibility` | `4.57e-5`   | compressibility in bar                 |
-
+| Option              | Default   | Note                                   |
+| ------------------- | --------- | -------------------------------------- |
+| `--ensemble `       | `'nvt' `  | `'npt'` or `'nvt'`                     |
+| `--T `              | `273 `    | Temperature in K                       |
+| `--t `              | `100 `    | Time in ps                             |
+| `--dt `             | `0.5 `    | Time step in fs                        |
+| `--taut `           | `100 `    | Damping factor for thermostat in steps |
+| `--taup `           | `1000 `   | Damping factor for barostat in steps   |
+| `--log-every `      | `5 `      | Log interval in steps                  |
+| `--pressure `       | `1 `      | pressure in bar                        |
+| `--compressibility` | `4.57e-5` | compressibility in bar                 |
 
 ??? "Source code"
 

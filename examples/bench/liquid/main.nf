@@ -44,21 +44,28 @@ workflow {
     }
     .set {ch}
 
-  pinnTrain(ch.name, ch.ds, ch.inp, ch.flag, ch.path).multiMap{
-    name, model ->
-    name: name
-    model: model
-    path: "trajs/$name"
-  }.set {ch}
+  ch_pinn = pinnTrain(ch.name, ch.ds, ch.inp, ch.flag, ch.path)
+  ch_pinn.model
+    .multiMap{
+      name, model ->
+      name: name
+      model: model
+      path: "trajs/$name"
+    }
+    .set {ch}
 
   init = file(params.asemd_init)
   flags = params.ase_flags
-  aseMD(ch.name, ch.model, init, flags, ch.path).traj.multiMap{
+
+  ch_ase = aseMD(ch.name, ch.model, init, flags, ch.path)
+  ch_ase.traj
+    .multiMap{
     name, traj ->
     name: name
     traj: traj
     path: "analyses/$name"
-  }.set {ch}
+    }
+    .set {ch}
 
   rdf(ch.name, ch.traj, params.rdf_flags, ch.path)
   mdlog(ch.name, ch.traj, params.log_flags, ch.path)

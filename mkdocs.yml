@@ -15,14 +15,14 @@ nav:
   - Workflow:
       - Overview: recipe/overview.md
       - Recipes:
-           - Benchmarking: recipe/benchmark.md
-           - Active learning: recipe/active.md
+          - Benchmarking: recipe/benchmark.md
+          - Active learning: recipe/active.md
       - Modules:
-          - TIPS: module/tips.md
-          - CP2K: module/cp2k.md
           - ASE: module/ase.md
+          - CP2K: module/cp2k.md
           - LAMMPS: module/lammps.md
-          - Misc: module/misc.md
+          - PiNN: module/pinn.md
+          - Utils: module/utils.md
   - Library:
       - Overview: library.md
       - File formats: formats.md

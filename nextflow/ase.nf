@@ -2,7 +2,7 @@ nextflow.enable.dsl=2
 
 process aseMD {
     label 'ase'
-    publishDir "$publish", mode: 'link'
+    publishDir "$publish"
 
     input:
       val tag
