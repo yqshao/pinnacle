@@ -23,10 +23,14 @@ def version():
 @click.option("-f", "--fmt", metavar="", default="auto", help="input format")
 @click.option("-o", "--output", metavar="", default="dataset")
 @click.option("-of", "--ofmt", metavar="", default="runner", help="output format")
-def convert(filename, fmt, output, ofmt):
-    from tips.io import load_ds
+@click.option("--emap", metavar="", default=None, help="lammps data for elem")
+def convert(filename, fmt, output, ofmt, emap):
+    from tips.io import load_ds, map_elems
+
     ds = load_ds(filename, fmt=fmt)
-    ds.convert(output, fmt=ofmt)
+    if emap:
+        ds.map_elems(emap)
+    ds.convert(output, ofmt)
 
 
 main.add_command(convert)
