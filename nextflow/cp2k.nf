@@ -1,49 +1,81 @@
 nextflow.enable.dsl=2
 
+params.publish = 'cp2k'
 params.cp2k_cmd = 'cp2k'
 params.cp2k_aux = null
 
 process cp2k {
+  tag "$name"
   label 'cp2k'
-  publishDir "$publish"
+  publishDir "$params.publish/$name"
 
   input:
     val name
     path input
-    path init
     path aux
-    val publish
 
   output:
     tuple val(name), path('*.{ener,xyz,stress}'), emit:traj
-    tuple val(name), path('cp2k.log'), emit:log
+    tuple val(name), path('cp2k.log'), emit:logs
     tuple val(name), path('*.restart'), emit:restart, optional:true
 
   script:
-  """
-  #!/bin/bash
-  $params.cp2k_cmd -i $input | tee cp2k.log
-  """
+    """
+    #!/bin/bash
+    $params.cp2k_cmd -i $input | tee cp2k.log
+    """
 }
 
 
-process ck2pInp {
+process cp2kGenInp {
+  tag "$name"
   label 'tips'
-  cache false
-  publishDir "$publish"
+  publishDir "$params.publish/$name"
 
   input:
     val name
-    patth input
+    path input, stageAs: 'cp2k_skel.inp'
     path init
+    val flags
 
   output:
-    tuple val(name), path('generated.inp')
+    tuple val(name), path('cp2k.inp')
 
   script:
   """
-  #!/bin/bash
-
+  #!/usr/bin/env python
+  import re
+  from ase.data import chemical_symbols as symbol
+  from tips.io import load_ds
+  # read flags
+  setup = {
+    'emap': None,
+    'idx': -1,
+    'fmt': 'auto',
+  }
+  flags = {
+    k: v for k,v in
+      re.findall('--(.*?)[\\s,\\=]([^\\s]*)', "$flags")
+  }
+  setup.update(flags)
+  # load the desired geometry
+  ds = load_ds("$init", fmt=flags['fmt'])
+  if setup['emap'] is not None:
+      ds = ds.map_elems(setup['emap'])
+  datum = ds[int(setup['idx'])]
+  # edit the input file
+  coord = [f'  {symbol[e]} {x} {y} {z}' for e, (x,y,z) in zip(datum['elem'], datum['coord'])]
+  cell = [f'  {v} {x} {y} {z}' for v, (x, y, z) in zip('ABC', datum['cell'])]
+  subsys = ['&COORD']+coord+['&END COORD']+['&CELL']+cell+['&END CELL']
+  lines = open("$input").readlines()
+  for idx, line in enumerate(lines):
+      if '&END SUBSYS' in line:
+          indent = len(line) - len(line.lstrip())
+          break
+  subsys = [' '*(indent+2) + l + '\\n' for l in subsys]
+  lines = lines[:idx] + subsys + lines[idx:]
+  with open('cp2k.inp', 'w') as f:
+      f.writelines(lines)
   """
 }
 
@@ -53,25 +85,22 @@ workflow cp2kMD {
     name
     input
     init
-    publish
+    flags
 
   main:
-    ch_inp = cp2kInp(name, input, init)
-    ch_pub = name.merget(publish)
+    ch_inp = cp2kGenInp(name, input, init, flags)
     ch_inp
-      .join(ch_pub)
       .multiMap{
-        name, inp, publish ->
+        name, inp ->
         name: name
         inp: inp
         aux: file(params.cp2k_aux)
-        publish: publish
       }
       .set {ch}
-    out = cp2k(ch.name, ch.inp, ch.aux, ch.publish)
+    out = cp2k(ch.name, ch.inp, ch.aux)
 
   emit:
     traj = out.traj
-    log = out.log
+    logs = out.logs
     restart = out.restart
 }

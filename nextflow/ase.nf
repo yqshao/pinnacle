@@ -1,19 +1,21 @@
 nextflow.enable.dsl=2
 
+params.publish = 'ase'
+
 process aseMD {
+    tag "$name"
     label 'ase'
-    publishDir "$publish"
+    publishDir "$param.publish/$name"
 
     input:
-      val tag
+      val name
       path model, stageAs: 'model*'
       path init
       val flags
-      val publish
 
     output:
-      tuple val(tag), path('asemd.traj'), emit: traj
-      tuple val(tag), path('asemd.log'), emit: log
+      tuple val(name), path('asemd.traj'), emit: traj
+      tuple val(name), path('asemd.log'), emit: log
 
     script:
       """

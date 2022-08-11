@@ -16,7 +16,6 @@ documentation](https://teoroo-cmc.github.io/PiNN/master/usage/cli/train/).
 | (in) dataset | file | a dataset recognizable by PiNN           |
 | (in) input   | file | a PiNN `.yml` input file                 |
 | (in) flag    | val  | flags for `pinn train`                   |
-| (in) publish | val  | path to publish the output traj. and log |
 | (out) model  | file | Trained PiNN model                       |
 | (out) log    | file | PiNN log (the evaluation errors)         |
 

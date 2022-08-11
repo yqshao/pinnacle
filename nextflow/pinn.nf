@@ -1,15 +1,17 @@
 nextflow.enable.dsl=2
 
+params.publish = 'pinn'
+
 process pinnTrain {
+    tag "$name"
     label 'pinn'
-    publishDir "$publish", mode: 'link'
+    publishDir "$params.publish/$name"
 
     input:
       val name
       path dataset
       path input
       val flags
-      val publish
 
     output:
       tuple val(name), path('model/', type:'dir'), emit: model

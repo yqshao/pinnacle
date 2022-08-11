@@ -1,14 +1,16 @@
 nextflow.enable.dsl=2
 
+params.publish = 'analysis'
+
 process rdf {
+    tag "$name"
     label 'analysis'
-    publishDir "$publish", mode: 'link'
+    publishDir "$param.publish/$name"
 
     input:
-      val tag
+      val name
       path traj
       val flags
-      val publish
 
     output:
       tuple val(tag), path('rdf*.dat')
@@ -66,14 +68,14 @@ process rdf {
 
 
 process mdlog {
+    tag "$name"
     label 'analysis'
-    publishDir "$publish", mode: 'link'
+    publishDir "$param.publish/$name"
 
     input:
       val tag
       path traj
       val flags
-      val publish
 
     output:
       tuple val(tag), path('*.dat')

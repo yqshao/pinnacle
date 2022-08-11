@@ -17,7 +17,6 @@ two parameters that can be specified during runtime or in `nextflow.config`:
 | (in) name     | val  | an id to identify the process             |
 | (in) input    | file | CP2k input file                           |
 | (in) aux      | file | Auxiliary files                           |
-| (in) publish  | val  | path to publish the output traj. and log  |
 | (out) traj    | file | Trajectory (pos, frc, ener, cell, stress) |
 | (out) log     | file | CP2K log                                  |
 | (out) restart | file | CP2K restart file                         |
@@ -36,7 +35,6 @@ is used, the last frame will be used.
 | (in) name     | val  | an id to identify the process                |
 | (in) input    | val  | a CP2k input file                            |
 | (in) init     | file | a geometry file, to be inserted to the input |
-| (in) publish  | val  | path to publish the CP2K input and output    |
 
 [^out]: Output channels are the same as [cp2k](#cp2k).
 

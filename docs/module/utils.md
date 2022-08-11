@@ -10,5 +10,4 @@ can be a list of files (in such case), the dataset will be joined together.
 | (in) name    | val  | an id to identify the process |
 | (in) dataset | file | input dataset(s)              |
 | (in) flags   | val  | `tips convert` options        |
-| (in) publish | val  | path to output the dataset    |
 | (out) output | file | the converted dataset         |

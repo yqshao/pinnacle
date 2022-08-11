@@ -13,7 +13,6 @@ binary, which can be specified during runtime or in `nextflow.config`.
 | (in) name     | val  | an id to identify the process             |
 | (in) input    | file | LAMMPS input file                         |
 | (in) aux      | file | Auxiliary files (force field, data, etc.) |
-| (in) publish  | val  | path to publish the output traj. and log  |
 | (out) traj    | file | Trajectory in `.dump` format              |
 | (out) log     | file | LAMMPS log                                |
 | (out) restart | file | LAMMPS restart files in `.restart`        |
