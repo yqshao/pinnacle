@@ -7,9 +7,7 @@ process convert {
   publishDir "$params.publish/$name"
 
   input:
-    val name
-    path input
-    val flags
+    tuple val(name), path(input), val(flags)
 
   output:
     tuple val(name), path('converted.*')

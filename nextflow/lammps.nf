@@ -9,9 +9,7 @@ process lammpsMD {
   label 'lammps'
 
   input:
-    val name
-    path input
-    path aux
+    tuple val(name), path(input), path(aux)
 
   output:
     tuple val(name), path('*.dump'), emit: traj

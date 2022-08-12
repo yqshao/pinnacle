@@ -2,22 +2,9 @@
 
 nextflow.enable.dsl=2
 
-// This is an exmple of benchmarking script for a liquid system, multiple
-// datasets and models may be specied but the same analysis is performed
-// for each trained model.
-
-// to prepare a dataset from a RuNNer-formatted dataset:
-// ``
-// to prepare a dataset from a DeePMD-formatted dataset:
-//
-
-// the paramsters include those files:
-// dataset/*.data, several input datasets
-// inputs/*.yml, several model parameters
-// inputs/init.xyz, initial geometry for
 params.datasets = './datasets/*.data'
 params.pinn_inp = './inputs/pinet.yml'
-params.asemd_init = './inputs/init.xyz'
+params.ase_init = './inputs/init.xyz'
 
 // below are addition parameters that might be ajusted
 params.repeats = 5
@@ -26,45 +13,19 @@ params.ase_flags = '--ensemble npt --T 373 --t 100 --dt 0.5 --log-every 10'
 params.rdf_flags = '--tags O-O,O-H --rc 5 '
 params.log_flags = '--tags density'
 
-include { pinnTrain } from './pinn.nf'
-include { aseMD } from './ase.nf'
-include { rdf; mdlog } from './analysis.nf'
+include { pinnTrain } from './pinn.nf' addParams(publish: 'models')
+include { aseMD } from './ase.nf' addParams(publish: 'trajs')
+include { rdf; mdlog } from './analysis.nf' addParams(publish: 'analyses')
 
 workflow {
-  // combine
-  channel.fromPath(params.datasets)
-    .combine(channel.fromPath(params.pinn_inp))
-    .combine(channel.of(1..params.repeats))
-    .multiMap{ ds, inp, seed ->
-      ds: ds
-      inp: inp
-      flag: "--seed $seed $params.pinn_flags"
-      name: "$ds.baseName-$inp.baseName-$seed"
-    }
-    .set {ch}
+  channel.fromPath(params.datasets) \
+    | combine(channel.fromPath(params.pinn_inp)) \
+    | combine(channel.of(1..params.repeats)) \
+    | map { ds, inp, seed -> ["$ds.baseName-$inp.baseName-$seed", ds, inp, "--seed $seed $params.pinn_flags"] } \
+    | pinnTrain \
+    | map { name, model -> [name, model, file(params.ase_init), params.ase_flags] } \
+    | aseMD
 
-  ch_pinn = pinnTrain(ch.name, ch.ds, ch.inp, ch.flag)
-  ch_pinn.model
-    .multiMap{
-      name, model ->
-      name: name
-      model: model
-    }
-    .set {ch}
-
-  init = file(params.asemd_init)
-  flags = params.ase_flags
-
-  ch_ase = aseMD(ch.name, ch.model, init, flags)
-  ch_ase.traj
-    .multiMap{
-    name, traj ->
-    name: name
-    traj: traj
-    path: "analyses/$name"
-    }
-    .set {ch}
-
-  rdf(ch.name, ch.traj, params.rdf_flags)
-  mdlog(ch.name, ch.traj, params.log_flags)
+  aseMD.out | map {name, traj -> [name, traj, params.rdf_flags]} | rdf
+  aseMD.out | map {name, traj -> [name, traj, params.log_flags]} | mdlog
 }

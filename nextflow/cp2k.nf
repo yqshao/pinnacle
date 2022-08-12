@@ -10,9 +10,7 @@ process cp2k {
   publishDir "$params.publish/$name"
 
   input:
-    val name
-    path input
-    path aux
+    tuple val(name), path(input), path(aux)
 
   output:
     tuple val(name), path('*.{ener,xyz,stress}'), emit:traj
@@ -33,10 +31,7 @@ process cp2kGenInp {
   publishDir "$params.publish/$name"
 
   input:
-    val name
-    path input, stageAs: 'cp2k_skel.inp'
-    path init
-    val flags
+    tuple val(name), path(input,stageAs: 'cp2k_skel.inp'), path(init), val(flags)
 
   output:
     tuple val(name), path('cp2k.inp')
@@ -82,25 +77,15 @@ process cp2kGenInp {
 
 workflow cp2kMD {
   take:
-    name
-    input
-    init
-    flags
+    ch // [name, input, init, flags]
 
   main:
-    ch_inp = cp2kGenInp(name, input, init, flags)
-    ch_inp
-      .multiMap{
-        name, inp ->
-        name: name
-        inp: inp
-        aux: file(params.cp2k_aux)
-      }
-      .set {ch}
-    out = cp2k(ch.name, ch.inp, ch.aux)
+    ch | cp2kGenInp // -> [name, inp]
+       | map {name, inp -> [name, inp, file(params.cp2k_aux)]}
+       | cp2k
 
   emit:
-    traj = out.traj
-    logs = out.logs
-    restart = out.restart
+    traj = cp2k.out.traj
+    logs = cp2k.out.logs
+    restart = cp2k.out.restart
 }
