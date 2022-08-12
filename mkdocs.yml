@@ -52,6 +52,7 @@ theme:
   favicon: assets/favicon.png
   custom_dir: docs/overrides
   features:
+    - content.code.annotate
     - navigation.tabs
     - navigation.sections
 plugins:
@@ -69,8 +70,10 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.snippets
   - pymdownx.emoji
-  - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+     anchor_linenums: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tabbed:
