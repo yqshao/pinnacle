@@ -1,24 +1,36 @@
 # Active workflows
 
-## Usage
+TIPS implements several strategies to run active learning workflows, as detailed
+below.
 
-The below commands generate a workflow in `main.nf`and then runs it via
-nextflow. The TIPS wizard generates a generic skeleton for designing the
-workflows, to futher tweak it, please refer to the annotated `main.nf` and
-`nextflow.config` files.
+## Query by Committee
 
-=== "commands"
+The query by committee (QbC) takes one dataset and adaptively samples a small
+fraction of data from it. Note that unlike the other AL workflows, this scheme
+does not actively generate new dataset.
 
-    ```bash
-    tips wizard active
-    nextflow run main.nf
+=== "Flowchart"
+
+    ```mermaid
+    graph LR
+    filter([Filter]) --> ds[Dataset]
+    ds ------ |End or Next Iter.| qbc
+    ref[Reference] --> filter
+    ref -----> qbc([QbC])
+    inp[Input] ---> train([Train])
+    ds --> train
+    seeds[Seeds] ---> train
+    subgraph QbC Iteration
+      train --> model[Model]
+      model --> qbc
+    end
     ```
 
 === "main.nf"
 
     ```groovy
     #!/usr/bin/env nextflow
-    
+
     params.dataset = 'qm9'
     params.input = './inputs/*.yml'
     params.md_init = 'h2o.xyz'
@@ -27,36 +39,30 @@ workflows, to futher tweak it, please refer to the annotated `main.nf` and
     // to be written
     ```
 
-=== "nextflow.config"
+## Ensemble NN
 
-    ```groovygg
-    profiles {
-      standard {
-        process {
-          cpus=1
-          errorStrategy='ignore'
-          withLabel: pinn {container='yqshao/pinn:master'}
-          withLabel: tame {container='yqshao/tame:master'}
-        }
-        executor {
-          name = 'local'
-          cpus = 16
-        }
-      }
+In an ensemble NN workflow, the trajectory is propagated with an ensemble of NN
+models, while a subset of the trajectory is labelled according to a given
+uncertainty tolerance.
+
+=== "Flowchart"
+
+    ```mermaid
+    graph LR
+    ds[Dataset] --- |End or Next iter.| filter([Filter])
+    ds & inp[Input] & seeds[Seeds] --> train([Train])
+    subgraph ENN Iteration
+      train --> model[Model]
+      model --> emd([Ensemble MD])
+      emd ---> traj[Trajecotry] & Uncertainty --> filter
+    end
     ```
-    
-## Strategies
 
-TIPS provides different strategies for an active leraning task, which affects
-the efficiency and the resulting NN.
+## Density-based Clustering
 
-** ENN **: In an ENN (ensemble NN) workflow, the trajectory is propogated with
-an ensemble of NN models, while a subset of the trajectory is labelled according
-to a given uncertainty tolerance.
-
-** DAS **: The DAS (density-based adaptive sampling) scheme samples the
-configuration space by actively biasing the dynamics according to the data
-distribution in latent space.
+The density-based clustering (DBC) scheme samples the configuration space by
+actively biasing the dynamics according to the data distribution in latent
+space.
 
 ## Other links
 

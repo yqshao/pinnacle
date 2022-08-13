@@ -1,8 +1,23 @@
-# Benchmark workflows
+# Benchmark workflow
 
-## Run the workflow
+Benchmarking is a typical usage of the TIPS framework. It works with a fixed
+dataset and test the result of different simulations. The possible processes are
+listed below, along with an annoted sample workflow.
 
-## Script with annotation
+=== "Flowchart"
+
+    ```mermaid
+    graph LR
+    ds[dataset] --> train([Train])
+    inp[input] --> train
+    seeds --> train
+    train --> model[Model]
+    model --> md([MD])
+    model --> vscan([Volum Scan])
+    md --> trajs[Trajectory]
+    trajs --> rdf([RDF])
+    trajs --> mdlog([MDLog])
+    ```
 
 === "main.nf"
 
@@ -22,23 +37,24 @@
     include { rdf; mdlog } from './analysis.nf' addParams(publish: 'analyses')
 
     workflow { // (2)
-      channel.fromPath(params.datasets)                                  \
-        | combine(channel.fromPath(params.pinn_inp))                     \
-        | combine(channel.of(1..params.repeats))                         \
-        | map { ds, inp, seed ->                                         \
-                ["$ds.baseName-$inp.baseName-$seed", ds, inp,            \
-                 "--seed $seed $params.pinn_flags"] }                    \
-        | pinnTrain                                                      \
-        | map { name, model ->                                           \
-                [name, model, file(params.ase_init), params.ase_flags] } \
-        | aseMD
-      // (3)
+      channel.fromPath(params.datasets)                       \
+        | combine(channel.fromPath(params.pinn_inp))          \
+        | combine(channel.of(1..params.repeats))              \
+        | map { ds, inp, seed ->                              \
+                ["$ds.baseName-$inp.baseName-$seed", ds, inp, \
+                 "--seed $seed $params.pinn_flags"] }         \
+        | pinnTrain                                           \
+        | combine(channel.fromPath(params.ase_init))          \
+        | map { name, model, init ->                          \
+                [name, model, init, params.ase_flags] }       \
+        | aseMD // (3)
+
       aseMD.out | map {name, traj -> [name, traj, params.rdf_flags]} | rdf
       aseMD.out | map {name, traj -> [name, traj, params.log_flags]} | mdlog
     }
     ```
 
-    1. The files can be specified with wildcards to easily match multiple files.
+    1. The files can be specified with wildcards to match multiple files.
     2. The [`combine` operator](https://www.nextflow.io/docs/latest/operator.html#combine)
        builds `tuple`s with all possible combinations. Here, we want to benchmark all dataset
        with all model inputs, and run `repeats` for each model.
