@@ -19,13 +19,11 @@ def _serialize(tensors, spec):
 
 def ds2pinn(ds, fname):
     """Converts a dataset"""
-    import os
     import yaml
     import tensorflow as tf
     from copy import deepcopy
 
-    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-    tfr = ".".join(fname.split(".")[:-1] + ["tfr"])
+    tfr = f"{fname}.tfr"
     writer = tf.io.TFRecordWriter(tfr)
 
     def tips2pinn(dict_tips):
@@ -60,5 +58,5 @@ def ds2pinn(ds, fname):
         "n_sample": ds.meta["size"],
         "elems": [int(e) for e in list(ds.meta["elem"])],
     }
-    with open(fname, "w") as f:
+    with open(f"{fname}.yml", "w") as f:
         yaml.safe_dump({"format": spec, "info": info_dict}, f)

@@ -2,8 +2,10 @@
 
 """The CP2K data loader"""
 import numpy as np
+import logging
 from tips.io.utils import list_loader
 
+logger = logging.getLogger('tips')
 
 def _index_xyz(fname):
     """Indexes a list of cp2k files, return the location to each frame"""
@@ -138,11 +140,19 @@ def load_cp2k(project, pos="auto", cell="auto", frc="auto", ener="auto"):
             data.update(loaders[k](indices[k][i]))
         return data
 
-    assert len(set([len(idx) for idx in indices.values()]))==1
+
+    sizes = {k:len(idx) for k,idx in indices.items()}
+    try:
+        assert len(set(sizes.values())) == 1, f"In consistent sizes {sizes}"
+        files = list(sizes.keys())
+        size = list(sizes.values())[0]
+        logger.info(f"Indexed CP2K project {project}, size: {size}, files: {files}")
+    except AssertionError as err:
+        logger.exception(err)
 
     meta = {
         "fmt": "CP2K output",
-        "size": len(indices["pos"]),
+        "size": size,
         "elem": set(loader(0)["elem"]),
         "spec": specs,
     }
