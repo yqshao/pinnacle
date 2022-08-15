@@ -76,18 +76,27 @@ class Dataset:
         convertor = tips.io.convertors[fmt]
         return convertor(self, *args, **kwargs)
 
-    def split(self, splits, shuffle=True, seed=0):
-        """Split the dataset into randomly splitted formats
+    def shuffle(self, seed=0):
+        """ Shuffle the dataset, support only indexanle datasets only
 
         Args:
-            splits (dict): dictionary of fractions
-            shuffle (bool): shuffle the dataset
             seed (int): random seed for splitting
 
         Return:
             dict of Datasets
         """
-        return splitted
+        import random
+        assert self.indexer is not None
+        random.seed(seed)
+        new_idx = random.shuffle(list(range(self.meta['size'])))
+
+        def indexer(i):
+            return self.indexer(new_idx[i])
+
+        meta = deepcopy(self.meta)
+        meta["fmt"] = "TIPS shuffled"
+
+        return Dataset(indexer=indexer, meta=meta)
 
     def join(self, ds):
         """Joins two datasets
