@@ -88,17 +88,19 @@ _pos_spec = {
 
 
 @list_loader
-def load_cp2k(project, pos="auto", cell="auto", frc="auto", ener="auto"):
+def load_cp2k(project,
+              cp2k_pos="pos-1.xyz", cp2k_cell="cell-1.cell",
+              cp2k_frc="frc-1.xyz", cp2k_ener="1.ener"):
     """Loads cp2k-formatted outputs as datasets
 
     By default, the following supported output files are scanned and matching
     files will be loaded. The loader assumes that all files contains the same
     number of matching frames.
 
-    - ener: f"{project}-1.ener"
-    - cell: f"{project}-1.cell"
-    - pos: f"{project}-pos-1.xyz"
-    - frc: f"{project}-frc-1.xyz"
+    - ener: f"{project}-{cp2k_ener}"
+    - cell: f"{project}-{cp2k_cell}"
+    - pos: f"{project}-{cp2k_pos}"
+    - frc: f"{project}-{cp2k_frc}"
 
     TODO (extra keywords) to be scanned:
     - log2ener: load energy from a log file
@@ -116,19 +118,16 @@ def load_cp2k(project, pos="auto", cell="auto", frc="auto", ener="auto"):
     from tips.io.dataset import Dataset
 
     default_pattern = [
-        ("pos", "{project}-pos-1.xyz", _index_xyz, _load_pos, _pos_spec),
-        ("frc", "{project}-frc-1.xyz", _index_xyz, _load_frc, _frc_spec),
-        ("cell", "{project}-1.cell", _index_cell, _load_cell, _cell_spec),
-        ("ener", "{project}-1.ener", _index_ener, _load_ener, _ener_spec),
+        ("pos", f"{project}-{cp2k_pos}", _index_xyz, _load_pos, _pos_spec),
+        ("frc", f"{project}-{cp2k_frc}", _index_xyz, _load_frc, _frc_spec),
+        ("cell", f"{project}-{cp2k_cell}", _index_cell, _load_cell, _cell_spec),
+        ("ener", f"{project}-{cp2k_ener}", _index_ener, _load_ener, _ener_spec),
     ]
 
     indices, loaders, specs = {}, {}, {}
     for key, pattern, indexer, loader, spec in default_pattern:
-        if locals()[key] == "auto":
-            path = pattern.format(project=project)
-            path = path if exists(path) else False
-        else:
-            path = locals()[key]
+        path = pattern.format(project=project)
+        path = path if exists(path) else False
         if path:
             indices[key] = indexer(path)
             loaders[key] = loader

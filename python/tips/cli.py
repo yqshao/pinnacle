@@ -34,10 +34,20 @@ def version():
 @click.option("-em", "--emap", metavar="", default=None, help="lammps data for elem")
 @click.option("--shuffle", metavar="", is_flag=True, default=False, help="shuffle the dataset")
 @click.option("--seed", metavar="", default=0, help="seed for shuffling")
-def convert(filename, fmt, output, ofmt, emap, shuffle, seed):
+@click.option("--cp2k-ener", metavar="", default='1.ener', help="suffix for CP2K energy file")
+@click.option("--cp2k-cell", metavar="", default='cell-1.cell', help="suffix for CP2K cell file")
+@click.option("--cp2k-pos", metavar="", default='pos-1.xyz', help="suffix for CP2K position file")
+@click.option("--cp2k-frc", metavar="", default='frc-1.xyz', help="suffix for CP2K force file")
+def convert(filename, fmt, output, ofmt, emap, shuffle, seed,
+            **kwargs):
     from tips.io import load_ds
+    # format specific options
+    if fmt=='cp2k':
+        fmtargs = {k:v for k, v in kwargs.items if k.startswith('cp2k')}
+    else:
+        fmtargs = {}
 
-    ds = load_ds(filename, fmt=fmt)
+    ds = load_ds(filename, fmt=fmt, **fmtargs)
     if emap:
         logger.info(f"Remapping the datset with {emap}")
         ds.map_elems(emap)
