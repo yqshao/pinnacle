@@ -27,6 +27,7 @@ process aseMD {
     from ase.calculators.mixing import AverageCalculator
     from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
     from ase.md.nptberendsen import NPTBerendsen
+    from ase.md.nvtberendsen import NVTBerendsen
 
     setup = {
       'ensemble': 'npt', # ensemble

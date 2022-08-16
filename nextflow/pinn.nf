@@ -11,7 +11,7 @@ process pinnTrain {
     tuple val(name), path(dataset), path(input), val(flags)
 
   output:
-    tuple val(name), path('model/', type:'dir'), emit: model
+    tuple val(name), path('model', type:'dir'), emit: model
     tuple val(name), path('pinn.log'), emit: log
 
   script:
