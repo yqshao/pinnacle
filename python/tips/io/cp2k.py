@@ -89,7 +89,7 @@ _pos_spec = {
 
 @list_loader
 def load_cp2k(project,
-              cp2k_pos="pos-1.xyz", cp2k_cell="cell-1.cell",
+              cp2k_pos="pos-1.xyz", cp2k_cell="1.cell",
               cp2k_frc="frc-1.xyz", cp2k_ener="1.ener"):
     """Loads cp2k-formatted outputs as datasets
 

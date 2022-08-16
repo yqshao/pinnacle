@@ -13,7 +13,7 @@ process cp2k {
     tuple val(name), path(input), path(aux)
 
   output:
-    tuple val(name), path('*.{ener,xyz,stress}'), emit:traj
+    tuple val(name), path('*.{ener,xyz,stress,cell}'), emit:traj
     tuple val(name), path('cp2k.log'), emit:logs
     tuple val(name), path('*.restart'), emit:restart, optional:true
 
