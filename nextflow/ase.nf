@@ -5,7 +5,7 @@ params.publish = 'ase'
 process aseMD {
   tag "$name"
   label 'ase'
-  publishDir "$param.publish/$name"
+  publishDir "$params.publish/$name"
 
   input:
     tuple val(name), path(model,stageAs:'model*'), path(init), val(flags)
