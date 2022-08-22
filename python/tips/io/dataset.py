@@ -88,7 +88,8 @@ class Dataset:
         import random
         assert self.indexer is not None
         random.seed(seed)
-        new_idx = random.shuffle(list(range(self.meta['size'])))
+        new_idx = list(range(self.meta['size']))
+        random.shuffle(new_idx)
 
         def indexer(i):
             return self.indexer(new_idx[i])
