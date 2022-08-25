@@ -27,13 +27,12 @@ nav:
       - Overview: library.md
       - File formats: formats.md
       - CLI Commands:
-          - "tips bias": cli/bias.md
           - "tips convert": cli/convert.md
           - "tips subsample": cli/subsample.md
           - "tips wizard": cli/wizard.md
       - Python API:
           - "tips.io": python/io.md
-          - "tips.bias": python/convert.md
+          - "tips.bias": python/bias.md
           - "tips.subsample": python/subsample.md
           - "tips.reduction": python/reduction.md
   - Develop:
@@ -63,6 +62,7 @@ plugins:
   - mike
   - bibtex:
       bib_file: "docs/references.bib"
+      cite_style: "pandoc"
 extra:
   version:
     provider: mike
@@ -73,6 +73,8 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.snippets
   - pymdownx.emoji
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -87,3 +89,7 @@ markdown_extensions:
       alternate_style: true
 extra_css:
   - css/extra.css
+extra_javascript:
+  - js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
