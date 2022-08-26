@@ -25,16 +25,14 @@ nav:
           - Utils: module/utils.md
   - Library:
       - Overview: library.md
-      - File formats: formats.md
       - CLI Commands:
           - "tips convert": cli/convert.md
           - "tips subsample": cli/subsample.md
+          - "tips utils": cli/utils.md
           - "tips wizard": cli/wizard.md
       - Python API:
           - "tips.io": python/io.md
           - "tips.bias": python/bias.md
-          - "tips.subsample": python/subsample.md
-          - "tips.reduction": python/reduction.md
   - Develop:
       - Overview: develop.md
       - Writing you own:

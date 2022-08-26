@@ -39,15 +39,15 @@ Detailed descriptions about the `Dataset` object can be found in its [API docume
 
 !!! warning "Check: implemented; No-entry: not implemented yet; Empty: not-planned"
 
-| Format  | Read               | Convert            | Note                           |
-|---------|--------------------|--------------------|--------------------------------|
-| asetraj | :white_check_mark: | :white_check_mark: | ASE Trajectory obj or files    |
-| cp2k    | :white_check_mark: |                    | CP2K data (pos, frc, and cell) |
-| deepmd  | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
-| ext-xyz | :no_entry_sign:    | :white_check_mark: | Extended XYZ format            |
-| lammps  | :white_check_mark: |                    | LAMMPS dump format             |
-| pinn    | :no_entry_sign:    | :white_check_mark: | PiNN-style TFRecord format     |
-| runner  | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
+| Format      | Read               | Convert            | Note                           |
+|-------------|--------------------|--------------------|--------------------------------|
+| ase/asetraj | :white_check_mark: | :white_check_mark: | ASE Trajectory obj or files    |
+| cp2k        | :white_check_mark: |                    | CP2K data (pos, frc, and cell) |
+| deepmd      | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
+| ext-xyz     | :no_entry_sign:    | :white_check_mark: | Extended XYZ format            |
+| lammps      | :white_check_mark: |                    | LAMMPS dump format             |
+| pinn        | :no_entry_sign:    | :white_check_mark: | PiNN-style TFRecord format     |
+| runner      | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
 
 ## Custom reader/writer
 
