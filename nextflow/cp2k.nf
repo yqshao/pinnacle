@@ -31,46 +31,14 @@ process cp2kGenInp {
   publishDir "$params.publish/$name"
 
   input:
-    tuple val(name), path(input,stageAs: 'cp2k_skel.inp'), path(init), val(flags)
+    tuple val(name), path(input,stageAs: 'cp2k_skel.inp'), path(ds), val(flags)
 
   output:
-    tuple val(name), path('cp2k.inp')
+    tuple val(name), path('*.inp')
 
   script:
   """
-  #!/usr/bin/env python
-  import re
-  from ase.data import chemical_symbols as symbol
-  from tips.io import load_ds
-  # read flags
-  setup = {
-    'emap': None,
-    'idx': -1,
-    'fmt': 'auto',
-  }
-  flags = {
-    k: v for k,v in
-      re.findall('--(.*?)[\\s,\\=]([^\\s]*)', "$flags")
-  }
-  setup.update(flags)
-  # load the desired geometry
-  ds = load_ds("$init", fmt=flags['fmt'])
-  if setup['emap'] is not None:
-      ds = ds.map_elems(setup['emap'])
-  datum = ds[int(setup['idx'])]
-  # edit the input file
-  coord = [f'  {symbol[e]} {x} {y} {z}' for e, (x,y,z) in zip(datum['elem'], datum['coord'])]
-  cell = [f'  {v} {x} {y} {z}' for v, (x, y, z) in zip('ABC', datum['cell'])]
-  subsys = ['&COORD']+coord+['&END COORD']+['&CELL']+cell+['&END CELL']
-  lines = open("$input").readlines()
-  for idx, line in enumerate(lines):
-      if '&END SUBSYS' in line:
-          indent = len(line) - len(line.lstrip())
-          break
-  subsys = [' '*(indent+2) + l + '\\n' for l in subsys]
-  lines = lines[:idx] + subsys + lines[idx:]
-  with open('cp2k.inp', 'w') as f:
-      f.writelines(lines)
+  tips utils mkcp2kinp $input $ds $flags
   """
 }
 
