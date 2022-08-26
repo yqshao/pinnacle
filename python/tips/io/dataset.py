@@ -103,6 +103,7 @@ class Dataset:
         convertor = tips.io.convertors[fmt]
         return convertor(self, *args, **kwargs)
 
+
     def shuffle(self, seed=0):
         """ Shuffle the dataset, support only indexanle datasets only
 
@@ -125,6 +126,54 @@ class Dataset:
         meta["fmt"] = "TIPS shuffled"
 
         return Dataset(indexer=indexer, meta=meta)
+
+
+    def subsample(self, strategy, nsample=None, psample=None, sort_key='force_std'):
+        """Subsample a dataet according to certain variables
+
+        Args:
+            strategy: 'uniform' or 'sorted'
+            nsample: number of samples to take
+            psample: percentile of samples to take
+
+        Return:
+            idx: inidices of the selected samples
+            Dataset: a TIPS Dataset
+        """
+        import math
+        import numpy as np
+        if 'size' not in self.meta:
+            self.skim()
+        size = self.meta['size']
+        assert (nsample is None) != (psample is None), "Must specify one of nsample or psample."
+        if psample is not None:
+            nsample = int(size / 100. * psample)
+        assert nsample <= size, f"Requested sample {nsample} larger than dataset size {size}."
+
+        if strategy == 'uniform':
+            step = math.floor(size/nsample)
+            idx = np.array(list(range(0,step*nsample,step)))
+            dataset = self[slice(0,step*nsample,step)]
+        elif strategy == 'sorted':
+            if sort_key.startswith('-'):
+                key = sort_key[1:]
+                sign = -1
+            else:
+                key = sort_key
+                sign = 1
+            tosort = [sign*np.max(datum[key]) for datum in self]
+            idx = np.argsort(tosort)[::-1][:nsample]
+            def indexer(i):
+                return self.indexer(idx[i])
+            meta = deepcopy(self.meta)
+            meta["fmt"] = "TIPS subsampled"
+            meta["size"] = nsample
+            dataset = Dataset(indexer=indexer, meta=meta)
+        else:
+            raise ValueError(f"Unknown strategy {strategy}")
+
+        return idx, dataset
+
 
     def join(self, ds):
         """Joins two datasets
