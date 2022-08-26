@@ -24,22 +24,31 @@ process aseMD {
     from ase.io import read
     from ase.io.trajectory import Trajectory
     from ase.md import MDLogger
-    from ase.calculators.mixing import AverageCalculator
     from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
     from ase.md.nptberendsen import NPTBerendsen
     from ase.md.nvtberendsen import NVTBerendsen
+    from tips.bias import EnsembleBiasedCalculator
+
+    # ------------ patch ase properties to write extra cols --------------------
+    from ase.calculators.calculator import all_properties
+    all_properties+=[f'{prop}_{extra}' for prop in ['energy', 'forces', 'stress'] for extra in ['avg','std','bias']]
+    # --------------------------------------------------------------------------
 
     setup = {
-      'ensemble': 'npt', # ensemble
-      'T': 373, # temperature in K
-      't': 100, # time in ps
+      'ensemble': 'nvt', # ensemble
+      'T': 340, # temperature in K
+      't': 50, # time in ps
       'dt': 0.5, # timestep is fs
       'taut': 100, # thermostat damping in steps
       'taup': 1000, # barastat dampling in steps
-      'log-every': 5, # log interval in steps
+      'log-every': 20, # log interval in steps
       'pressure': 1, # pressure in bar
-      'compressibility': 4.57e-4 # compressibility in bar^{-1}
+      'compressibility': 4.57e-4, # compressibility in bar^{-1}
+      'bias': None,
+      'kb': 0,
+      'sigma0': 0,
     }
+
     flags = {
       k: v for k,v in
         re.findall('--(.*?)[\\s,\\=]([^\\s]*)', "$flags")
@@ -60,7 +69,7 @@ process aseMD {
     """
     models = ["${model.join('", "')}"]
     calcs = [pinn.get_calc(model) for model in models]
-    calc = AverageCalculator(calcs)
+    calc = EnsembleBiasedCalculator(calcs, bias=setup['bias'], kb=float(setup['kb']), sigma0=float(setup['sigma0']))
     """}
 
     atoms = read("$init")
