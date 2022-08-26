@@ -10,13 +10,12 @@ universal data loader `load_ds`:
 
     ```Python
     from tips.io import load_ds
-    
+
     ds = load_ds('path/to/dataset', fmt=deepmd-raw')
-    ds = ds.join(ds) # datasets can be joined together 
+    ds = ds.join(ds) # datasets can be joined together
     ds.convert('dataset.yml', fmt='pinn') # the and converted to different formats
     print(ds)
     ```
-
 
 === "Output"
 
@@ -36,17 +35,16 @@ universal data loader `load_ds`:
 
 Detailed descriptions about the `Dataset` object can be found in its [API documentation]().
 
-
 ## Available formats
 
 !!! warning "Check: implemented; No-entry: not implemented yet; Empty: not-planned"
 
 | Format  | Read               | Convert            | Note                           |
 |---------|--------------------|--------------------|--------------------------------|
-| ase     | :no_entry_sign:    | :no_entry_sign:    | ASE Atoms objects              |
+| asetraj | :white_check_mark: | :white_check_mark: | ASE Trajectory obj or files    |
 | cp2k    | :white_check_mark: |                    | CP2K data (pos, frc, and cell) |
 | deepmd  | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
-| ext-xyz | :no_entry_sign:    | :no_entry_sign:    | Extended XYZ format            |
+| ext-xyz | :no_entry_sign:    | :white_check_mark: | Extended XYZ format            |
 | lammps  | :white_check_mark: |                    | LAMMPS dump format             |
 | pinn    | :no_entry_sign:    | :white_check_mark: | PiNN-style TFRecord format     |
 | runner  | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
@@ -60,19 +58,19 @@ for custom reader/writer can be found below:
 
     ```Python
     from tips.io.utils import tips_reader, tips_convert
-    
+
     @tips_reader('my-ase')
     def load_ase(traj):
         """ An example reader for ASE Atoms
-        
-        The function should return a tips Dataset, by specifying at least an generator which 
+
+        The function should return a tips Dataset, by specifying at least an generator which
         yields elements in the dataset one by one, and the metadata specifying the data structure.
         (the generator is redundent ni the below case because an ASE trajectory is indexable
         and has a defined size, such a generator will be defined automatically by tips)
-        
+
         Args:
             traj: list of atoms
-            
+
         Returns:
             tips.io.Dataset
         """
@@ -95,34 +93,34 @@ for custom reader/writer can be found below:
                'cell': atoms.cell,
             }
             return data
-            
+
         def generator():
             for i in range(meta['size']):
                 yield indexer(i)
 
         return Dataset(generator=generator, meta=meta, indexer=indexer)
-    
-    
+
+
     @tips_convert('my-ase')
     def ds_to_ase(dataset):
         """ An example data converter to ASE trajectory
-        
+
         The function must takes on dataset and optionally extra keyword arguments as inputs.
         There is no limitaton on the return values.
-        
+
         Args:
             dataset (tips.io.Dataset): a dataset object
         """
         from ase import Atoms
         traj = [
-           Atoms(data['elems'], 
+           Atoms(data['elems'],
                  positions=data['coord'],
                  cell=data['cell'])
            for data in dataset
         ]
         return  traj
     ```
-    
+
     The additonal format will be available for data loading and conversion:
     ```Python
     ds = load_ds([Atoms['H'], Atoms['Cu']], fmt='my-ase')

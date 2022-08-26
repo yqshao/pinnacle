@@ -27,6 +27,6 @@ def list_loader(func):
             all_ds = [func(p, *args, **kwargs) for p in path]
             return reduce(lambda x, y: x.join(y), all_ds)
         else:
-            return func(path)
+            return func(path, *args, **kwargs)
 
     return wrapper

@@ -4,8 +4,10 @@
 
 """
 import tips
+import logging
 from copy import deepcopy
 
+logger = logging.getLogger('tips')
 
 class Dataset:
     def __init__(self, generator=None, indexer=None, meta=None):
@@ -53,15 +55,40 @@ class Dataset:
         from ase.data import chemical_symbols
 
         spec_repr = "\n     ".join(
-            f"{k}: {v['shape']}, {v['dtype']}" for k, v in self.meta["spec"].items()
+            f"{k}: [{', '.join(['na' if s is None else str(s) for s in v['shape']])}], {v['dtype']}" for k, v in self.meta["spec"].items()
         )
         repr = f"""<tips.io.Dataset
  fmt: {self.meta['fmt']}
- size: {self.meta['size']}
- elem: {', '.join(chemical_symbols[i] for i in sorted(self.meta['elem']))}
+ size: {self.meta['size'] if 'size' in self.meta else 'Unknown'}
+ elem: {', '.join(chemical_symbols[i] for i in sorted(self.meta['elem'])) if 'elem' in self.meta else 'Unknown'}
  spec:
      {spec_repr}>"""
         return repr
+
+    def skim(self, check_elem=True):
+        """Scan througn the dataset and build some missing information when possible"""
+        count = 0
+        if check_elem:
+            elem = set()
+        for datum in self.generator():
+            count += 1
+            if check_elem:
+                elem = elem.union(datum['elem'])
+
+        if 'size' not in self.meta:
+            self.meta['size'] = count
+            logger.info('Dataset size added to metadata')
+        elif self.meta['size'] != count:
+            self.meta['size'] = count
+            logger.warning('Inconsistent dataset found, overwriting the metadata')
+
+        if check_elem:
+            if 'elem' not in self.meta:
+                self.meta['elem'] = elem
+            elif self.meta['elem'] != elem:
+                self.meta['elem'] = elem
+                logger.warning('Inconsistent elem set found, overwriting the metadata')
+
 
     def convert(self, *args, fmt=None, **kwargs):
         """Convert the dataset to a known format the format, the format writer
@@ -114,9 +141,9 @@ class Dataset:
         meta = deepcopy(self.meta)
         meta["fmt"] = "TIPS joined"
         meta["size"] = self.meta["size"] + ds.meta["size"]
-        meta["elem"] = self.meta["elem"].union(ds.meta["elem"])
+        if ("elem" in self.meta) and ("elem" in ds.meta):
+            meta["elem"] = self.meta["elem"].union(ds.meta["elem"])
         if self.indexer is not None and ds.indexer is not None:
-
             def indexer(i):
                 if i < self.meta["size"]:
                     return self.indexer(i)
