@@ -26,5 +26,5 @@ setup(
         "pyyaml>=3.01",
     ],
     python_requires=">=3.6",
-    entry_points={"console_scripts": ["tips=tips.cli:main"]},
+    entry_points={"console_scripts": ["tips=tips.cli.cli:cli"]},
 )
