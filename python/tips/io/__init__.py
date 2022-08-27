@@ -6,7 +6,7 @@ from .cp2k import load_cp2k
 from .cp2klog import load_cp2klog
 from .deepmd import load_deepmd_raw
 from .lammps import load_lammps_dump
-from .pinn import ds2pinn
+from .pinn import load_pinn_tfr, ds2pinn
 from .runner import ds2runner
 
 loaders = {
@@ -16,6 +16,7 @@ loaders = {
     'cp2klog': load_cp2klog,
     'deepmd-raw': load_deepmd_raw,
     'lammps-dump': load_lammps_dump,
+    'pinn': load_pinn_tfr,
 }
 
 convertors = {

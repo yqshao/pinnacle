@@ -1,4 +1,44 @@
 # -*- coding: utf-8 -*-
+from .utils import list_loader
+
+_pinn2tips = {
+    'cell': 'cell',
+    'coord': 'coord',
+    'elems': 'elem',
+    'e_data': 'energy',
+    'f_data': 'force',
+    's_data': 'stress',
+}
+
+
+@list_loader
+def load_pinn_tfr(fname):
+    import sys, yaml
+    import numpy as np
+    import tensorflow as tf
+    from tensorflow.python.lib.io.file_io import FileIO
+    from tips.io.dataset import Dataset
+    with FileIO(fname, 'r') as f:
+        ds_spec = yaml.safe_load(f)
+    size = ds_spec['info']['n_sample']
+    format_dict = ds_spec['format']
+    dtypes = {k: format_dict[k]['dtype'] for k in format_dict.keys()}
+    shapes = {k: format_dict[k]['shape'] for k in format_dict.keys()}
+    feature_dict = {k: tf.io.FixedLenFeature([], tf.string) for k in dtypes}
+    spec = {_pinn2tips[k]:v for k,v in format_dict.items()}
+    meta = {'fmt':'PiNN-style TFRecord', 'size':size, 'spec':spec}
+    def parser(example):
+        return tf.io.parse_single_example(example, feature_dict)
+    def converter(tensors):
+        tensors = {k: tf.io.parse_tensor(v, dtypes[k])
+                   for k, v in tensors.items()}
+        [v.set_shape(shapes[k]) for k, v in tensors.items()]
+        tensors = {_pinn2tips[k]:v for k,v in tensors.items()}
+        return tensors
+    tfr = '.'.join(fname.split('.')[:-1]+['tfr'])
+    dataset = tf.data.TFRecordDataset(tfr).map(parser).map(converter)
+    generator = dataset.as_numpy_iterator
+    return Dataset(meta=meta, generator=generator)
 
 
 def _bytes_feature(value):

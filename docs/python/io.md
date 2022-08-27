@@ -46,7 +46,7 @@ Detailed descriptions about the `Dataset` object can be found in its [API docume
 | deepmd      | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
 | ext-xyz     | :no_entry_sign:    | :white_check_mark: | Extended XYZ format            |
 | lammps      | :white_check_mark: |                    | LAMMPS dump format             |
-| pinn        | :no_entry_sign:    | :white_check_mark: | PiNN-style TFRecord format     |
+| pinn        | :white_check_mark: | :white_check_mark: | PiNN-style TFRecord format     |
 | runner      | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
 
 ## Custom reader/writer
