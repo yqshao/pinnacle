@@ -18,26 +18,19 @@ class Dataset:
         self.meta = meta
         self.indexer = indexer
         if indexer is not None and generator is None:
-
             def generator():
                 for i in range(self.meta["size"]):
                     yield self.indexer(i)
-
         self.generator = generator
 
-    def __getitem__(self, key):
-        if self.indexer is None:
-            raise NotImplementedError("The dataset is not indexible")
-
+    def __getitem_indexer(self, key):
         if isinstance(key, slice):
             keys = list(range(self.meta["size"]))[key]
             meta = deepcopy(self.meta)
             meta["size"] = len(keys)
             meta["fmt"] = "TIPS sliced"
-
             def new_indexer(i):
                 return self.indexer(keys[i])
-
             return Dataset(indexer=new_indexer, meta=meta)
         elif isinstance(key, int):
             if key < 0:
@@ -47,6 +40,48 @@ class Dataset:
             return self.indexer(key)
         else:
             raise NotImplementedError(f"Cannot index a dataset with {type(key)}")
+
+    def __getitem_generator(self, key):
+        logger.warning('Indexing a generator based dataset, this can be slow.')
+        if 'size' not in self.meta:
+            self.skim()
+        size = self.meta['size']
+        if isinstance(key, slice):
+            assert key.step is None or key.step>0, 'Cannot slice generator ds with a negative slice.'
+            keys = list(range(size))[key]
+            meta = deepcopy(self.meta)
+            meta["size"] = len(keys)
+            meta["fmt"] = "TIPS sliced"
+            def new_generator():
+                iterator = enumerate(self.generator())
+                while len(keys) != 0:
+                    idx, datum = next(iterator)
+                    if idx==keys[0]:
+                        del keys[0]
+                        yield datum
+                    else:
+                        assert idx<keys[0], 'Unexpected generator output.'
+            return Dataset(generator=new_generator, meta=meta)
+        elif isinstance(key, int):
+            if key < 0:
+                key = key + self.meta["size"]
+            if key >= self.meta["size"] or key < 0:
+                raise IndexError("Index out of range.")
+            for idx, datum in enumerate(self.generator()):
+                if idx == key:
+                    return datum
+                else:
+                    continue
+        else:
+            raise NotImplementedError(f"Cannot index a dataset with {type(key)}")
+
+
+    def __getitem__(self, key):
+        if self.indexer is None:
+            return self.__getitem_generator(key)
+        else:
+            return self.__getitem_indexer(key)
+
 
     def __iter__(self):
         return self.generator()
