@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""The CP2K data loader"""
+"""This module implements the loader for CP2K MD trajectories"""
+
 import numpy as np
 import logging
 from tips.io.utils import list_loader
@@ -142,7 +143,7 @@ def load_cp2k(project,
 
     sizes = {k:len(idx) for k,idx in indices.items()}
     try:
-        assert len(set(sizes.values())) == 1, f"In consistent sizes {sizes}"
+        assert len(set(sizes.values())) == 1, f"Inconsistent sizes {sizes}"
         files = list(sizes.keys())
         size = list(sizes.values())[0]
         logger.info(f"Indexed CP2K project {project}, size: {size}, files: {files}")
@@ -152,7 +153,6 @@ def load_cp2k(project,
     meta = {
         "fmt": "CP2K output",
         "size": size,
-        "elem": set(loader(0)["elem"]),
         "spec": specs,
     }
 
