@@ -7,20 +7,29 @@ listed below, along with an annoted sample workflow.
 === "Flowchart"
 
     ```mermaid
-    graph LR
-    ds[dataset] --> train([Train])
+    flowchart TD
+    %%{init:{'flowchart':{'nodeSpacing': 36, 'rankSpacing': 40, 'curve':'linear'}}}%%
+
+    ds[dataset] --> train([pinnTrain])
     inp[input] --> train
-    seeds --> train
-    train --> model[Model]
+    seed --> train
+    train --> model["model-${ds}-${inp}-${seed}"]
     model --> md([MD])
     model --> vscan([Volum Scan])
-    md --> trajs[Trajectory]
-    trajs --> rdf([RDF])
-    trajs --> mdlog([MDLog])
+    md --> traj[trajectory]
+    traj --> rdf([RDF])
+    traj --> mdlog([MDLog])
+    rdf --> results["results-${ds}-${inp}-${seed}"]
+    mdlog --> results
+    vscan ---> results
+    
+    classDef data fill:#fff,stroke:#000,stroke-width:2px;
+    classDef process stroke-width:2px;
+    class train,pinnMD,cp2kLabel,tipsMix,tipsDiff process;
+    class ds,inp,seed,traj,model,results data;
     ```
 
 === "main.nf"
-
     ```groovy
     // below are addition parameters that might be ajusted
     params.datasets = './datasets/*.data' // (1)

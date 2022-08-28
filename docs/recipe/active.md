@@ -1,70 +1,87 @@
 # Active workflows
 
-TIPS implements several strategies to run active learning workflows, as detailed
-below.
-
-## Query by Committee
-
-The query by committee (QbC) takes one dataset and adaptively samples a small
-fraction of data from it. Note that unlike the other AL workflows, this scheme
-does not actively generate new dataset.
+The active learnign recipe provided by TIPS runs active learning loops. The
+workflow is controlled by the several subworkflows, the trianing, sampling, and
+labelling process. A typical workflow is shown below.
 
 === "Flowchart"
 
     ```mermaid
-    graph LR
-    filter([Filter]) --> ds[Dataset]
-    ds ------ |End or Next Iter.| qbc
-    ref[Reference] --> filter
-    ref -----> qbc([QbC])
-    inp[Input] ---> train([Train])
-    ds --> train
-    seeds[Seeds] ---> train
-    subgraph QbC Iteration
-      train --> model[Model]
-      model --> qbc
+    flowchart TD
+    %%{init:{'flowchart':{'nodeSpacing': 30, 'rankSpacing': 30, 'curve':'linear'}}}%%
+
+    subgraph init [ ]
+    initgeo
+    initds
+    initmodel
     end
-    ```
-
-=== "main.nf"
-
-    ```groovy
-    #!/usr/bin/env nextflow
-
-    params.dataset = 'qm9'
-    params.input = './inputs/*.yml'
-    params.md_init = 'h2o.xyz'
-    params.md_flag = '--nvt --T 373 --step 1000 --dt 0.5'
-
-    // to be written
-    ```
-
-## Ensemble NN
-
-In an ensemble NN workflow, the trajectory is propagated with an ensemble of NN
-models, while a subset of the trajectory is labelled according to a given
-uncertainty tolerance.
-
-=== "Flowchart"
-
-    ```mermaid
-    graph LR
-    ds[Dataset] --- |End or Next iter.| filter([Filter])
-    ds & inp[Input] & seeds[Seeds] --> train([Train])
-    subgraph ENN Iteration
-      train --> model[Model]
-      model --> emd([Ensemble MD])
-      emd ---> traj[Trajecotry] & Uncertainty --> filter
+    initgeo["gen${i}/geo"] ----> pinnMD([pinnMD])
+    initmodel["gen${i}/model"] --> pinnTrain
+    initmodel --> model
+    initds["gen${i}/ds"] --> pinnTrain([pinnTrain])
+    subgraph iteration [ ]
+    pinnTrain --> model["model"]
+    model --> pinnMD
+    pinnMD --> traj[trajectory]
+    traj --> tipsDiff([tipsDiff])
+    traj --> cp2kLabel([cp2kLabel])
+    cp2kLabel --> tipsDiff
+    cp2kLabel --> tipsMix([tipsMix])
     end
+    subgraph nx [ ]
+    tipsDiff --> nxgeo["gen${i+1}/geo"]
+    model ------> nxmodel["gen${i+1}/model"]
+    initds --> tipsMix
+    tipsMix --> nxds["gen${i+1}/ds"]
+    end
+    
+    classDef hide fill:none, stroke:none;
+    classDef data fill:#fff,stroke:#000,stroke-width:2px;
+    classDef process stroke-width:2px;
+    class init,nx hide;
+    class pinnTrain,pinnMD,cp2kLabel,tipsMix,tipsDiff process;
+    class initgeo,initds,initmodel,model,traj,nxmodel,nxgeo,nxds data;
+    style iteration fill:none, stroke-dasharray: 6 2,stroke:#333
+    linkStyle 1 stroke:#900,color:black;
+    linkStyle 2 stroke:#090,color:black;
     ```
 
-## Density-based Clustering
+## Parameters
 
-The density-based clustering (DBC) scheme samples the configuration space by
-actively biasing the dynamics according to the data distribution in latent
-space.
+The workflow supports a number of parameters to adjust a runtime, most of those
+parameters can be chose on your request with `tips wizard`.
 
-## Other links
+### Initalization options
 
-- [Sample model input files]()
-- [Adding a custom analysis]()
+| Parameter      | Default    | Description                                           |
+| -------------- | ---------- | ----------------------------------------------------- |
+| `proj `        | user input | folder for storing results                            |
+| `init_geo `    | user input | inital geometries for sampling                        |
+| `init_model `  | user input | initial model or model parameters                     |
+| `init_ds `     | user input | initial dataset                                       |
+| `restart_from` | `false`    | restart from a given generation                       |
+| `init_time `   | `1.0`      | sampling time scale in ps                             |
+| `init_steps `  | `100000`   | training steps for initial model                      |
+| `ens_size `    | `5`        | size of the model ensemble (for ensemble MD sampling) |
+| `geo_size `    | `6`        | size of the starting geometries for sampling          |
+
+### Iteration options
+
+| Parameter      | Default            | Description                                         |
+|----------------|--------------------|-----------------------------------------------------|
+| `retrain_step` | `50000 `           | number of retrain steps per generation              |
+| `label_flags ` | `'--nsample 50' `  | selection rule for the data to label                |
+| `old_flag `    | `'--nsample 2700'` | selection rule for the old dataset                  |
+| `new_flag `    | `'--nsample 300'`  | selection rule for the new dataset                  |
+| `sp_points `   | `50`               | number of single points for each sampled trajectory |
+| `acc_fac `     | `2.0 `             | factor to acceralate/slow down the sampling         |
+| `min_time `    | `1.0 `             | minimal timescale for sampling                      |
+| `emaxtol `     | `0.020 `           | toleranace for max error error                      |
+| `ermsetol `    | `0.005 `           | toleranace for energy RMSE                          |
+| `fmaxtol `     | `0.800 `           | toleranace for max force component error            |
+| `frmsetol `    | `0.200 `           | toleranace for force RMSE                           |
+
+See Also:
+
+- biased dynamics with: `pinnMD`
+- biased subsampling with: `subsample`
