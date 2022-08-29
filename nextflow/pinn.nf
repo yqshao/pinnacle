@@ -8,7 +8,7 @@ process pinnTrain {
   publishDir "$params.publish/$name"
 
   input:
-    tuple val(name), path(dataset), path(input), val(flags)
+    tuple val(name), path(dataset), path(input, stageAs:'input'), val(flags)
 
   output:
     tuple val(name), path('model', type:'dir'), emit: model
@@ -17,7 +17,7 @@ process pinnTrain {
   script:
     convert_flag = "${(flags =~ /--seed[\s,\=]\d+/)[0]}"
     train_flags = "${flags.replaceAll(/--seed[\s,\=]\d+/, '')}"
-    dataset = (dataset instanceof Path) ? dataset : dataset[1]
+    dataset = (dataset instanceof Path) ? dataset : dataset[0].baseName+'.yml'
     """
     #!/bin/bash
 
