@@ -102,7 +102,7 @@ def load_cp2klog(fname):
     specs = {
         'cell': {"cell": {"dtype": "float", "shape": [3, 3]}},
         'coord': {
-            "elems": {"dtype": "int", "shape": [None]},
+            "elem": {"dtype": "int", "shape": [None]},
             "coord": {"dtype": "float", "shape": [None, 3]},
         },
         'energy': {"energy": {"dtype": "float", "shape": []}},

@@ -79,8 +79,9 @@ def ds2pinn(ds, fname):
         return dict_pinn
 
     spec = deepcopy(tips2pinn(ds.meta["spec"]))
-    for k in spec.keys():
-        spec[k]["dtype"] += "32"
+    for k in spec.keys(): # default to single precision numbers
+        if '32' not in spec[k]["dtype"] and '64' not in spec[k]["dtype"]:
+            spec[k]["dtype"] += "32"
 
     for idx, data in enumerate(ds):
         tensors = _serialize(tips2pinn(data), spec)
@@ -94,9 +95,8 @@ def ds2pinn(ds, fname):
         writer.write(example.SerializeToString())
 
     # finalize
-    info_dict = {
-        "n_sample": ds.meta["size"],
-        "elems": [int(e) for e in list(ds.meta["elem"])],
-    }
+    info_dict = {"n_sample": idx+1}
+    if 'elem' in ds.meta:
+        info_dict["elems"]: [int(e) for e in list(ds.meta["elem"])]
     with open(f"{fname}.yml", "w") as f:
         yaml.safe_dump({"format": spec, "info": info_dict}, f)

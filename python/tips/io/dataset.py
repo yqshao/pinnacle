@@ -227,13 +227,15 @@ class Dataset:
         meta["size"] = self.meta["size"] + ds.meta["size"]
         if ("elem" in self.meta) and ("elem" in ds.meta):
             meta["elem"] = self.meta["elem"].union(ds.meta["elem"])
+        keys = set(meta['spec'].keys()).intersection(set(ds.meta['spec'].keys()))
+        meta["spec"] = {k:v for k,v in meta["spec"].items() if k in keys}
         if self.indexer is not None and ds.indexer is not None:
             def indexer(i):
                 if i < self.meta["size"]:
-                    return self.indexer(i)
+                    datum = self.indexer(i)
                 else:
-                    return ds.indexer(i - self.meta["size"])
-
+                    datum = ds.indexer(i - self.meta["size"])
+                return {k:v for k,v in datum.items() if k in keys}
             return Dataset(indexer=indexer, meta=meta)
 
     def filter(self, func):
