@@ -24,6 +24,8 @@ setup(
         "click>=7.0",
         "numpy>1.3.0",
         "pyyaml>=3.01",
+        "ase>=3.22",
+        "mock>=4.0"
     ],
     python_requires=">=3.6",
     entry_points={"console_scripts": ["tips=tips.cli.cli:cli"]},
