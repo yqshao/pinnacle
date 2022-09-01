@@ -5,6 +5,11 @@
 import numpy as np
 import logging
 from tips.io.utils import list_loader
+from ase.units import create_units
+
+# This is to follow the CP2K standard to use CODATA 2006, which differs from the
+# the defaults of ASE (as of ASE ver 3.23 and CP2K v2022.1, Sep 2022)
+units = create_units('2006')
 
 logger = logging.getLogger('tips')
 
@@ -32,7 +37,7 @@ def _index_cell(fname):
 def _index_ener(fname):
     """Indexes a cp2k energy file, returns the total energy"""
     energies = np.loadtxt(fname, usecols=4)
-    return energies
+    return energies * units['Hartree']
 
 
 def _load_pos(index):
@@ -56,7 +61,6 @@ def _load_pos(index):
 
 def _load_frc(index):
     from ase.data import atomic_numbers
-
     fname, loc = index
     force = []
     f = open(fname, "r")
@@ -67,8 +71,8 @@ def _load_frc(index):
         if len(line) <= 1:
             break
         force.append(line[1:4])
-    f.close()
-    return {"force": np.array(force, np.float)}
+    f.close() # by default, CP2K writes xyz in a.u. (Hartree/Bohr)
+    return {"force": np.array(force, np.float)*units['Hartree']/units['Bohr']}
 
 
 def _load_ener(energy):
@@ -102,10 +106,6 @@ def load_cp2k(project,
     - cell: f"{project}-{cp2k_cell}"
     - pos: f"{project}-{cp2k_pos}"
     - frc: f"{project}-{cp2k_frc}"
-
-    TODO (extra keywords) to be scanned:
-    - log2ener: load energy from a log file
-    - log2frc: load forces from a log file
 
     Args:
         project (str): the CP2K project name

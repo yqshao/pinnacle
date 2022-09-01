@@ -4,6 +4,11 @@
 
 import numpy as np
 from tips.io.utils import list_loader
+from ase.units import create_units
+
+# This is to follow the CP2K standard to use CODATA 2006, which differs from the
+# the defaults of ASE (as of ASE ver 3.23 and CP2K v2022.1, Sep 2022)
+units = create_units('2006')
 
 def _index_pattern(fname, pattern):
     import mmap, re
@@ -18,7 +23,7 @@ def _index_energy(fname):
     import mmap, re
     f = open(fname, 'r')
     regex = r'ENERGY\|\ Total FORCE_EVAL.*:\s*([-+]?\d*\.?\d*)'
-    energies = [float(e) for e in re.findall(regex, f.read())]
+    energies = [float(e)*units['Hartree'] for e in re.findall(regex, f.read())]
     f.close()
     return energies
 
@@ -66,7 +71,7 @@ def _load_force(fname, loc):
         data.append(l.split()[3:])
         l = f.readline().strip()
     f.close()
-    return {'force': np.array(data, np.float)}
+    return {'force': np.array(data, np.float)*units['Hartree']/units['Bohr']}
 
 
 def _load_stress(fname, loc):
@@ -80,9 +85,8 @@ def _load_stress(fname, loc):
     for i in range(3):
         l = f.readline().strip()
         data.append(l.split()[2:])
-    unit = -1e9*2.2937e17*1e-30 # GPa -> Hartree/Ang^3
     f.close()
-    return {'stress': np.array(data, np.float)*unit}
+    return {'stress': -np.array(data, np.float)*units['GPa']}
 
 @list_loader
 def load_cp2klog(fname):
