@@ -5,9 +5,11 @@
 """
 import tips
 import logging
+import numpy as np
 from copy import deepcopy
 
 logger = logging.getLogger('tips')
+
 
 class Dataset:
     def __init__(self, generator=None, indexer=None, meta=None):
@@ -88,9 +90,9 @@ class Dataset:
 
     def __repr__(self):
         from ase.data import chemical_symbols
-
         spec_repr = "\n     ".join(
-            f"{k}: [{', '.join(['na' if s is None else str(s) for s in v['shape']])}], {v['dtype']}" for k, v in self.meta["spec"].items()
+            f"{k}: [{', '.join(['na' if s is None else str(s) for s in v['shape']])}], {v['dtype']}"
+            for k, v in self.meta["spec"].items()
         )
         repr = f"""<tips.io.Dataset
  fmt: {self.meta['fmt']}
@@ -115,7 +117,7 @@ class Dataset:
             logger.info('Dataset size added to metadata')
         elif self.meta['size'] != count:
             self.meta['size'] = count
-            logger.warning('Inconsistent dataset found, overwriting the metadata')
+            logger.warning('Missing/inconsistent size found, overwriting the metadata')
 
         if check_elem:
             if 'elem' not in self.meta:
@@ -161,6 +163,35 @@ class Dataset:
         meta["fmt"] = "TIPS shuffled"
 
         return Dataset(indexer=indexer, meta=meta)
+
+
+    def filter(self, filters):
+        """Filters the dataset with a list of filters
+
+        Args:
+            filter: list of filters
+
+        Return:
+            Dataset: a TIPS Dataset
+
+        """
+        import re
+
+        from .filter import filters2fn
+
+        meta = deepcopy(self.meta)
+        meta["fmt"] = "TIPS filtered"
+        meta["size"] = None
+
+        filter_fn = filters2fn(filters)
+
+        def generator():
+            """New dataset generator that keeps only filter_fn(datum) is True"""
+            for datum in self.generator():
+                if filter_fn(datum):
+                    yield datum
+
+        return Dataset(generator=generator, meta=meta)
 
 
     def subsample(self, strategy, nsample=None, psample=None, sort_key='force_std'):
@@ -238,26 +269,6 @@ class Dataset:
                 return {k:v for k,v in datum.items() if k in keys}
             return Dataset(indexer=indexer, meta=meta)
 
-    def filter(self, func):
-        """Filter the dataset with a boolean function
-
-        Args:
-            func: a function that takes a datum and returns a bool
-
-        Return:
-            filtered dataset
-        """
-        assert set(self.meta["spec"].keys()) == set(self.meta["spec"].keys())
-        meta = deepcopy(self.meta)
-        meta["fmt"] = "TIPS filtered"
-        meta["size"] = None
-
-        def generator():
-            for datum in self.generator():
-                if func(datum):
-                    yield datum
-
-        return Dataset(generator=generator, meta=meta)
 
     def map_elems(self, emap):
         """Maps the elements of a dataset according to some typing rule

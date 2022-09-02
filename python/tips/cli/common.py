@@ -37,3 +37,7 @@ subsample_opts = _group_options(
     click.option('--psample', default=None, type=float, help="percentage to subsample"),
     click.option('--sort-key', default='force_std', help="key for the sorted strategy"),
 )
+
+filter_opts = _group_options(
+    click.option('--filter', "filters", default=[], multiple=True, help="dataset filters"),
+)

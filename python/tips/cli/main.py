@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import click
-from .common import load_opts, shuffle_opts, write_opts, subsample_opts, load_ds_with_opts
-from .utils import mkcp2kinp
+from .common import (
+    load_opts,
+    shuffle_opts,
+    write_opts,
+    subsample_opts,
+    filter_opts,
+    load_ds_with_opts
+)
 
 
 @click.command(name="convert", short_help="convert datasets")
@@ -10,15 +16,19 @@ from .utils import mkcp2kinp
 @load_opts
 @write_opts
 @shuffle_opts
+@filter_opts
 def convert(
         dataset, fmt, emap, # load_opts
         output, ofmt, # write_opts,
-        shuffle, seed #  shuffle_opts
+        shuffle, seed, #  shuffle_opts
+        filters
 ):
     if not dataset: return
     ds = load_ds_with_opts(dataset, fmt, emap)
     if shuffle:
         ds.shuffle(seed=seed)
+    if filters:
+        ds.filter(filters)
     ds.convert(output, fmt=ofmt)
 
 
