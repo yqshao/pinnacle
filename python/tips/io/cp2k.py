@@ -87,7 +87,7 @@ _frc_spec = {"force": {"dtype": "float", "shape": [None, 3]}}
 _cell_spec = {"cell": {"dtype": "float", "shape": [3, 3]}}
 _ener_spec = {"energy": {"dtype": "float", "shape": []}}
 _pos_spec = {
-    "elems": {"dtype": "int", "shape": [None]},
+    "elem": {"dtype": "int", "shape": [None]},
     "coord": {"dtype": "float", "shape": [None, 3]},
 }
 
