@@ -26,9 +26,9 @@ def convert(
     if not dataset: return
     ds = load_ds_with_opts(dataset, fmt, emap)
     if shuffle:
-        ds.shuffle(seed=seed)
+        ds = ds.shuffle(seed=seed)
     if filters:
-        ds.filter(filters)
+        ds = ds.filter(filters)
     ds.convert(output, fmt=ofmt)
 
 

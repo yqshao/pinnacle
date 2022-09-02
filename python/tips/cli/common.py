@@ -18,7 +18,7 @@ def load_ds_with_opts(dataset, fmt, emap):
     from tips.io import load_ds
     ds = load_ds(dataset, fmt=fmt)
     if emap is not None:
-        ds.map_elems(emap)
+        ds = ds.map_elems(emap)
     return ds
 
 shuffle_opts = _group_options(
