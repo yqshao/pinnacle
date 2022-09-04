@@ -1,10 +1,36 @@
 # The TIPS IO module
 
 The IO module in TIPS allows for the translation between different atomistic
-data formats, with a special focus for AML. The core class is `tips.io.Dataset`,
-which holds the dataset and its metadata, and allows for manipulation and
-convertion of the data. To create datasets, the easiest way is to use the
-universal data loader `load_ds`:
+data formats, with a special focus for AML. 
+
+## Available formats
+
+| Format      | Read               | Convert            | Note                           |
+|-------------|--------------------|--------------------|--------------------------------|
+| ase/asetraj | :white_check_mark: | :white_check_mark: | ASE Trajectory obj or files    |
+| cp2k        | :white_check_mark: | :no_entry_sign:    | CP2K data (pos, frc, and cell) |
+| deepmd      | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
+| extxyz      | :no_entry_sign:    | :white_check_mark: | Extended XYZ format            |
+| lammps      | :white_check_mark: | :no_entry_sign:    | LAMMPS dump format             |
+| pinn        | :white_check_mark: | :white_check_mark: | PiNN-style TFRecord format     |
+| runner      | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
+
+
+## General specification
+
+### units and formats
+
+TIPS uses a unit system compatible to ASE internally, that is:
+
+- energy in eV
+- length in Å
+
+Some formats does not have a fixed unit system, or a different unit standard,
+those are documented in the format-specific informaiton section
+
+### tips.io.load_ds
+
+The `load_ds` function is a universal entry point for dataset loaders in TIPS.
 
 === "Usage"
 
@@ -33,21 +59,61 @@ universal data loader `load_ds`:
          energy: [], float>
     ```
 
-Detailed descriptions about the `Dataset` object can be found in its [API documentation]().
 
-## Available formats
+## Format specific info.
 
-!!! warning "Check: implemented; No-entry: not implemented yet; Empty: not-planned"
+### tips.io.ase
 
-| Format      | Read               | Convert            | Note                           |
-|-------------|--------------------|--------------------|--------------------------------|
-| ase/asetraj | :white_check_mark: | :white_check_mark: | ASE Trajectory obj or files    |
-| cp2k        | :white_check_mark: |                    | CP2K data (pos, frc, and cell) |
-| deepmd      | :white_check_mark: | :no_entry_sign:    | DeePMD format                  |
-| ext-xyz     | :no_entry_sign:    | :white_check_mark: | Extended XYZ format            |
-| lammps      | :white_check_mark: |                    | LAMMPS dump format             |
-| pinn        | :white_check_mark: | :white_check_mark: | PiNN-style TFRecord format     |
-| runner      | :no_entry_sign:    | :white_check_mark: | RuNNer format                  |
+The `tips.io.ase` module allows the conversion of ase trajectories into the TIPS
+Dataset. Writer for `asetraj` and `extxyz` extends the original ASE file
+writers, and adds additional columns such as `force_std` which one might obtain
+in an ensemble-based MD simulation.
+
+??? "Source code"
+
+    ```python
+    --8<-- "python/tips/io/ase.py"
+    ```
+
+### tips.io.cp2k
+
+The `cp2k` reads CP2K ouputs in written as specified in the
+[`%MOTION%PRINT%`](https://manual.cp2k.org/trunk/CP2K_INPUT/MOTION/PRINT.html)
+section. Those files are typically named as `path/proj-pos-1.xyz`,
+`path/proj-frc-1.xyz`, etc, where the project name are specified in
+[`%GLOBAL%PROJECT_NAME%`](https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL.html#list_PROJECT_NAME).
+**Note** that the CP2K format assumes atomic units, and loader uses CODATA
+version 2006, as adapted by CP2K instead of the 2014 version used in ASE by
+default.
+
+??? "Source code"
+
+    ```python
+    --8<-- "python/tips/io/cp2k.py"
+    ```
+
+### tips.io.cp2klog
+
+The `cp2klog` module reads in information as specified in
+[`%FORCE_EVAL%PRINT%`](https://manual.cp2k.org/trunk/CP2K_INPUT/FORCE_EVAL/PRINT.html)
+section. Those outputs will by wriiten by CP2K to stdout. Like the `cp2k`
+module, `cp2klog` assumes the atomic units and uses CODATA 2006.
+
+??? "Source code"
+
+    ```python
+    --8<-- "python/tips/io/cp2klog.py"
+    ```
+
+### tips.io.runner
+
+The runner file format uses atomic units.
+
+??? "Source code"
+
+    ```python
+    --8<-- "python/tips/io/runner.py"
+    ```
 
 ## Custom reader/writer
 
@@ -127,14 +193,3 @@ for custom reader/writer can be found below:
     traj = ds.convert(fmt='my-ase')
     ```
 
-## Registered datasets
-
-TIPS curates a small list of datasets that can be directly accessed via the
-`load_ds` function. For now, the list exist mainly for test and demonstrative
-purpose.
-
-!!! warning "Not Implemented yet!"
-
-## API documentation
-
-!!! warning "Not Implemented yet!"

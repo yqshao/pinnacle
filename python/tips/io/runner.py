@@ -4,7 +4,6 @@
 
 RuNNer data has the format
 
-```
 begin
 lattice float float float
 lattice float float float
@@ -15,7 +14,6 @@ energy float
 charge float
 comment arbitrary string
 end
-```
 
 The order of the lines within the begin/end block are arbitrary. Coordinates,
 charges, energies and forces are all in atomic units.

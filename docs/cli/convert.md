@@ -1,7 +1,7 @@
 # tips convert
 
 Convert one or several datasets into another format. See
-[tips.io](../python/io/#available-formats) for the formats available.
+[tips.io](../python/io.md) for the formats available.
 
 ## Usage
 
