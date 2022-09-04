@@ -69,7 +69,13 @@ process aseMD {
     """
     models = ["${model.join('", "')}"]
     calcs = [pinn.get_calc(model) for model in models]
-    calc = EnsembleBiasedCalculator(calcs, bias=setup['bias'], kb=float(setup['kb']), sigma0=float(setup['sigma0']))
+    if len(calcs) == 1:
+        calc =  calcs[0]
+    else:
+        calc = EnsembleBiasedCalculator(calcs,
+                                        bias=setup['bias'],
+                                        kb=float(setup['kb']),
+                                        sigma0=float(setup['sigma0']))
     """}
 
     atoms = read("$init")
