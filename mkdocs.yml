@@ -7,6 +7,7 @@ nav:
       - Installation: start/install.md
       - Your first workflow: start/first_workflow.md
       - Configure your run: start/configure.md
+      - More on Nextflow: start/nextflow.md
       - License: start/license.md
       - Resources:
           - Getting help: start/help.md

@@ -58,8 +58,8 @@ listed below, along with an annoted sample workflow.
                 [name, model, init, params.ase_flags] }       \
         | aseMD // (3)
 
-      aseMD.out | map {name, traj -> [name, traj, params.rdf_flags]} | rdf
-      aseMD.out | map {name, traj -> [name, traj, params.log_flags]} | mdlog
+      aseMD.out.traj | map {name, traj -> [name, traj, params.rdf_flags]} | rdf
+      aseMD.out.traj | map {name, traj -> [name, traj, params.log_flags]} | mdlog
     }
     ```
 
