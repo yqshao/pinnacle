@@ -21,7 +21,7 @@ process pinnTrain {
     """
     #!/bin/bash
 
-    pinn convert $dataset -o 'train:8,eval:2' $convert_flag
+    pinn convert $dataset -o 'train:9,eval:1' $convert_flag
 
     if [ ! -f $input/params.yml ];  then
         mkdir -p model; cp $input model/params.yml
