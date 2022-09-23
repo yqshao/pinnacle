@@ -68,7 +68,8 @@ def _load_force(fname, loc):
     ), "Unknown format of CP2K log, aborting"
     l = f.readline().strip()
     while not l.startswith('SUM OF'):
-        data.append(l.split()[3:])
+        f_atom = [np.nan if '*' in frc else float(frc) for frc in l.split()[3:]]
+        data.append(f_atom)
         l = f.readline().strip()
     f.close()
     return {'force': np.array(data, np.float)*units['Hartree']/units['Bohr']}
