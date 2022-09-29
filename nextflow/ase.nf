@@ -80,7 +80,8 @@ process aseMD {
 
     atoms = read("$init")
     atoms.set_calculator(calc)
-    MaxwellBoltzmannDistribution(atoms, T*units.kB)
+    if not atoms.has('momenta'):
+        MaxwellBoltzmannDistribution(atoms, T*units.kB)
 
     if ensemble == 'npt':
         dyn = NPTBerendsen(atoms, timestep=dt, temperature=T, pressure=pressure,
