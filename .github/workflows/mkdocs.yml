@@ -20,7 +20,7 @@ jobs:
       - name: Cache Env
         uses: actions/cache@v2
         with:
-          path: ./.venv
+          path: .venv
           key: ${{ runner.os }}-venv-py3.9-${{ hashFiles('./docs/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-py3.9-${{ hashFiles('./docs/requirements.txt') }}
@@ -28,8 +28,8 @@ jobs:
       - name: Install dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
-          python3 -m venv ./.venv
-          . ./.venv/bin/activate
+          python3 -m venv .venv
+          . .venv/bin/activate
           pip install -r ./docs/requirements.txt
       - name: Configure Git user
         run: |
