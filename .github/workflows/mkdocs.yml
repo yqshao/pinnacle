@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0 # see https://github.com/jimporter/mike/issues/28
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
       - name: Cache Env
@@ -30,12 +30,13 @@ jobs:
         run: |
           python3 -m venv .venv
           . .venv/bin/activate
-          pip install -r ./docs/requirements.txt
+          python3 -m pip install -r ./docs/requirements.txt
       - name: Configure Git user
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
       - name: Deploy docs
         run: |
-          . ./.venv/bin/activate
+          source ./.venv/bin/activate
+          python3 -m pip install ./python
           mike deploy ${GITHUB_REF##*/} -b gh-pages -p

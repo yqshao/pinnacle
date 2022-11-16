@@ -28,7 +28,7 @@ TIPS uses a unit system compatible to ASE internally, that is:
 Some formats does not have a fixed unit system, or a different unit standard,
 those are documented in the format-specific informaiton section
 
-### tips.io.load_ds
+### `load_ds` funciton
 
 The `load_ds` function is a universal entry point for dataset loaders in TIPS.
 
@@ -59,6 +59,11 @@ The `load_ds` function is a universal entry point for dataset loaders in TIPS.
          energy: [], float>
     ```
 
+The function returns a `Dataset`-class object, its usage is detailed below.
+
+### `Dataset` class
+::: tips.io.dataset.Dataset
+
 
 ## Format specific info.
 
@@ -77,7 +82,7 @@ in an ensemble-based MD simulation.
 
 ### tips.io.cp2k
 
-The `cp2k` reads CP2K ouputs in written as specified in the
+The `cp2k` module reads CP2K ouputs in written as specified in the
 [`%MOTION%PRINT%`](https://manual.cp2k.org/trunk/CP2K_INPUT/MOTION/PRINT.html)
 section. Those files are typically named as `path/proj-pos-1.xyz`,
 `path/proj-frc-1.xyz`, etc, where the project name are specified in
@@ -103,6 +108,21 @@ module, `cp2klog` assumes the atomic units and uses CODATA 2006.
 
     ```python
     --8<-- "python/tips/io/cp2klog.py"
+    ```
+
+### tips.io.lammps
+
+The `lammps` reads the lammps formatted `.dump` files, note that this
+implementation only supports the limited format with the atom format: `ITEM:
+ATOMS id type x y z`, any other format should fail with an error. For lammps
+files it's common that the "real" elements information is stored in a separate
+`.data` file. The element can be converted easily with the `.map_elems()` method
+of the `Dataset` class.
+
+??? "Source code"
+
+    ```python
+    --8<-- "python/tips/io/lammps.py"
     ```
 
 ### tips.io.runner
