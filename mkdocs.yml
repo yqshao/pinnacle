@@ -1,77 +1,26 @@
-site_name: The Interatomic Potential Suite
-repo_url: https://github.com/teoroo-cmc/tips
-repo_name: Teoroo-CMC/TIPS
+site_name: PiNN<span>AcLe</span>
+repo_url: https://github.com/teoroo-cmc/pinnacle
+repo_name: teoroo-cmc/pinnacle
 nav:
   - Home: index.md
-  - Get started:
-      - Installation: start/install.md
-      - Your first workflow: start/first_workflow.md
-      - Configure your run: start/configure.md
-      - More on Nextflow: start/nextflow.md
-      - License: start/license.md
-      - Resources:
-          - Getting help: start/help.md
-          - Alternatives: start/alternatives.md
-          - References: start/references.md
-  - Workflow:
-      - Overview: recipe/overview.md
-      - Recipes:
-          - Benchmarking: recipe/benchmark.md
-          - Active learning: recipe/active.md
-      - Modules:
-          - ASE: module/ase.md
-          - CP2K: module/cp2k.md
-          - LAMMPS: module/lammps.md
-          - PiNN: module/pinn.md
-          - Utils: module/utils.md
-  - Library:
-      - Overview: library.md
-      - CLI Commands:
-          - "tips convert": cli/convert.md
-          - "tips subsample": cli/subsample.md
-          - "tips utils": cli/utils.md
-          - "tips wizard": cli/wizard.md
-      - Python API:
-          - "tips.io": python/io.md
-          - "tips.bias": python/bias.md
-  - Develop:
-      - Overview: develop.md
-      - Writing you own:
-          - Format: dev/format.md
-          - Dataset: dev/dataset.md
-          - Module: dev/module.md
-          - Recipie: dev/pattern.md
-      - Contributing:
-          - Developer setup: dev/setup.md
-          - Guideline: dev/guideline.md
+  - Tutorial:
+    - First project: tutorial/first_project.md
+    - Configure: tutorial/configure.md
+  - Modules:
+    - ASE: module/ase.md
+    - CP2K: module/cp2k.md
+    - LAMMPS: module/lammps.md
+    - PiNN: module/pinn.md
+    - Utils: module/utils.md
+  - Profiles:
+    - Overview: profiles/overview.md
+    - Alvis: profiles/alvis.md
 theme:
-  name: material
-  logo: assets/logo.svg
-  favicon: assets/favicon.png
-  custom_dir: docs/overrides
-  palette:
-    primary: teal
-    accent: teal
-  features:
-    - content.code.annotate
-    - navigation.tabs
-    - navigation.sections
-plugins:
+  name: flux
+plugins :
   - search
-  - mike
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            show_source: false
-            show_root_toc_entry: false
-            heading_level: 4
   - bibtex:
       bib_file: "docs/references.bib"
-      cite_style: "pandoc"
-extra:
-  version:
-    provider: mike
 markdown_extensions:
   - attr_list
   - footnotes
@@ -92,7 +41,6 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tabbed:
-      alternate_style: true
   - toc:
       toc_depth: 3
 extra_css:
@@ -101,5 +49,3 @@ extra_javascript:
   - js/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-watch:
-  - 'python/tips'

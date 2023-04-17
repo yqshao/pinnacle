@@ -1,8 +1,8 @@
 # More on nextflow
 
-## The deisgn of TIPS workflows
+## The deisgn of PiNNAcLe workflows
 
-The workflows in TIPS follows the
+The workflows in PiNNAcLe follows the
 [DSL2](https://www.nextflow.io/docs/latest/dsl2.html#) syntax of Nextflow, which
 allows processes and sub-workflows to be reused and imported as modules. In
 additon, the basic processes (trainers, samplers, and labellers) shares a
@@ -26,9 +26,9 @@ process pinnMD {
 }
 ```
 
-1. All TIPS workflows accepts tuples as input, where the "name" is a unique
+1. All PiNNAcLe workflows accepts tuples as input, where the "name" is a unique
    identifier of a process containning necessary metadata.
-2. TIPS workflows typically uses the `publish` parameter to specify the "parent"
+2. PiNNAcLe workflows typically uses the `publish` parameter to specify the "parent"
    folder of the same process, while different instantiation are placed into
    subfolders named after "name".
 3. Processes of the same "class" shares a same input structure, here, a MD
@@ -53,9 +53,9 @@ include { pinnTrain } from './tips/pinn.nf' addParams(publish: "$params.proj/mod
 
 ### Branching and merging
 
-In the order to parallelize the processes and combine them latter, TIPS always
-use the "name" as an identifier, the branched processes will be labelled as
-`name/branchname`, and they might be combined later with the
+In the order to parallelize the processes and combine them latter, PiNNAcLe
+always use the "name" as an identifier, the branched processes will be labelled
+as `name/branchname`, and they might be combined later with the
 [groupTuple](https://www.nextflow.io/docs/latest/operator.html#grouptuple)
 operator. (we use regular expressions to match naming patterns, when unsure,
 check [regex101](https://regex101.com))
