@@ -1,0 +1,9 @@
+_subdirectory: template
+title: PiNNAcLe
+description: "A PiNNAcLe-generated AML workflow"
+entry:
+  type: str
+  choices:
+    Activated Learning: acle
+    Benchmarking: benchmark
+    All PiNNAcLe workflows: all
