@@ -3,40 +3,26 @@ on:
   push:
     branches:
       - master
-      - dev
 jobs:
   build:
     name: Deploy docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # see https://github.com/jimporter/mike/issues/28
+        uses: actions/checkout@v3
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
-      - name: Cache Env
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: ${{ runner.os }}-venv-py3.9-${{ hashFiles('./docs/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-py3.9-${{ hashFiles('./docs/requirements.txt') }}
-            ${{ runner.os }}-
-      - name: Install dependencies
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+          cache: pip
+          cache-dependency-path: 'docs/requirements.txt'
+      - name: Install doc dependencies
         run: |
-          python3 -m venv .venv
-          . .venv/bin/activate
-          python3 -m pip install -r ./docs/requirements.txt
+          pip install -r docs/requirements.txt
       - name: Configure Git user
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
       - name: Deploy docs
         run: |
-          source ./.venv/bin/activate
-          python3 -m pip install ./python
-          mike deploy ${GITHUB_REF##*/} -b gh-pages -p
+          mkdocs gh-deploy --force
