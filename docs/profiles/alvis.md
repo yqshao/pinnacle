@@ -5,16 +5,15 @@
 
 [Alvis]: https://www.c3se.chalmers.se/about/Alvis/
 
-
 ## TensorFlow and PiNN
 
 Since TensorFlow is already installed on Alvis, it's recommended to run PiNN
-with that. To do so, make a python environment with the supplied TF
+with that. To do so, make a python environment with the supplied TF:
 
 ```bash
-ml TensorFlow/2.5.0-fosscuda-2020b
-python -m venv $HOME/pinn-tf25
-source $HOME/pinn-tf25/bin/activate
+ml TensorFlow/2.6.0-foss-2021a-CUDA-11.3.1
+python -m venv $HOME/pinn-tf26
+source $HOME/pinn-tf26/bin/activate
 pip install git+https://github.com/teoroo-cmc/pinn.git 
 ```
 
@@ -22,10 +21,21 @@ The above creates a python virtual environment based on the system TF module.
 When you need to run PiNN manually in a new bash session, you need to load the
 module and activate the environment:
 
+```bash
+ml TensorFlow/2.6.0-foss-2021a-CUDA-11.3.1
+source $HOME/pinn-tf26/bin/activate
 ```
-ml TensorFlow/2.5.0-fosscuda-2020b
-source $HOME/pinn-tf25/bin/activate
+
+You might also want to make this enivronment avaialble to the [Alvis
+OnDemand][ondemand] portal, following the instruction (after activating your
+environment):
+
+```bash
+pip install ipykernel
+python -m ipykernel install --user --name pinn --display-name "pinn-tf26"
 ```
+
+[ondemand]: https://portal.c3se.chalmers.se/pun/sys/dashboard/
 
 ## CP2K
 

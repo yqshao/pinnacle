@@ -1,4 +1,4 @@
-# Your first project
+# Your first PiNNAcLe workflow
 
 In this section, you will create a project with PiNNAcLe and see how it works.
 
@@ -69,8 +69,8 @@ structure and files below for more explanation.
 
 ## Nextflow basics
 
-Below going further, below are some nextflow commands that you might find useful.
-For a more comprehensive description, check the [Nextflow CLI
+Before going further, below are some nextflow commands that you might find
+useful. For a more comprehensive description, check the [nextflow CLI
 reference](https://www.nextflow.io/docs/latest/cli.html).
 
 
@@ -119,6 +119,5 @@ reference](https://www.nextflow.io/docs/latest/cli.html).
 
 ## What next?
 
-- [Configure your run](../configure.md) your run to work on any computational
+- [Configure](../configure) your run to work on any computational
   resource;
-- More in-depth examples of how [workflows](../../recipe/overview) are composed.
