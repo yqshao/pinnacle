@@ -40,5 +40,5 @@ The MD specifics for aseMD is specified as a string of flags in the form of
 ??? "Source code"
 
     ```groovy
-    --8<-- "nextflow/ase.nf"
+    --8<-- "nextflow/module/ase.nf"
     ```

@@ -22,5 +22,5 @@ documentation](https://teoroo-cmc.github.io/PiNN/master/usage/cli/train/).
 ??? "Source code"
 
     ```groovy
-    --8<-- "nextflow/pinn.nf"
+    --8<-- "nextflow/module/pinn.nf"
     ```

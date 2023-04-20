@@ -20,5 +20,5 @@ binary, which can be specified during runtime or in `nextflow.config`.
 ??? "Source code"
 
     ```groovy
-    --8<-- "nextflow/lammps.nf"
+    --8<-- "nextflow/module/lammps.nf"
     ```

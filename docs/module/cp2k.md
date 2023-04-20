@@ -41,5 +41,5 @@ is used, the last frame will be used.
 ??? "Source code"
 
     ```groovy
-    --8<-- "nextflow/cp2k.nf"
+    --8<-- "nextflow/module/cp2k.nf"
     ```
