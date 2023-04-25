@@ -1,7 +1,8 @@
-# Alvis
+# The Alvis Cluster
 
-> The [Alvis] cluster is a national NAISS resource dedicated for Artificial
-> Intelligence and Machine Learning research.
+The [Alvis] cluster is a national NAISS resource dedicated for Artificial
+Intelligence and Machine Learning research. The Alvis profile is configured to
+use the GPU resources there.
 
 [Alvis]: https://www.c3se.chalmers.se/about/Alvis/
 
@@ -32,7 +33,7 @@ environment):
 
 ```bash
 pip install ipykernel
-python -m ipykernel install --user --name pinn --display-name "pinn-tf26"
+python -m ipykernel install --user --name pinn-tf26 --display-name "pinn-tf26"
 ```
 
 [ondemand]: https://portal.c3se.chalmers.se/pun/sys/dashboard/

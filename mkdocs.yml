@@ -17,12 +17,16 @@ nav:
   - Profiles:
     - Overview: profiles/overview.md
     - Alvis: profiles/alvis.md
+    - Teoroo2: profiles/teoroo2.md
+
 theme:
   name: flux
+
 plugins :
   - search
   - bibtex:
       bib_file: "docs/references.bib"
+
 markdown_extensions:
   - attr_list
   - footnotes
@@ -45,5 +49,6 @@ markdown_extensions:
   - pymdownx.tabbed:
   - toc:
       toc_depth: 3
+
 extra_javascript:
   - js/mathjax.js
