@@ -5,7 +5,4 @@ work/
 .nextflow/
 .nextflow.log*
 .ipynb_checkpoints/
-/examples/bench/liquid/analyses/
-/examples/bench/liquid/datasets/
-/examples/bench/liquid/models/
-/examples/bench/liquid/trajs/
+/we_demo/

@@ -1,25 +1,79 @@
 nextflow.enable.dsl=2
 
-params.publish = 'ase'
+params.publish = ''
+params.ase_aux = '/dev/null'
+params.ase_label = 'ase'
+params.ase_props = '["energy", "forces"]'
 
-process aseMD {
-  tag "$name"
-  label 'ase'
+workflow md {
+  take:
+    ch // [name, inp, geo, flags]
+
+  main:
+    ch | map {name, inp, geo, flags -> \
+              [name, inp, geo, flags, file(params.ase_aux)]} \
+       | aseMD
+
+  emit:
+    traj = aseMD.out.traj
+    logs = aseMD.out.logs
+}
+
+workflow sp {
+  take:
+    ch // [name, geo]
+
+  main:
+    ch | map {name, inp, geo -> \
+              [name, inp, geo, file(params.ase_aux) ]} \
+       | aseSP
+
+  emit:
+    aseSP.out
+}
+
+
+process aseSP {
+  label "$params.ase_label"
   publishDir "$params.publish/$name"
 
   input:
-    tuple val(name), path(model,stageAs:'model*'), path(init), val(flags)
+    tuple val(name), path(calc, stageAs: 'calc.py'), path(geo), path(aux)
 
   output:
-    tuple val(name), path('asemd.traj'), emit: traj
-    tuple val(name), path('asemd.log'), emit: log
+    tuple val(name), path("sp.xyz")
 
   script:
     """
     #!/usr/bin/env python
+    from ase.io import read, write
+    from calc import calc
+
+    atoms = read('$geo')
+    atoms.calc=calc
+    calc.calculate(atoms, properties=${params.ase_props})
+
+    write('sp.xyz', atoms)
+    """
+}
+
+
+process aseMD {
+  label "$params.ase_label"
+  publishDir "$params.publish/$name"
+
+  input:
+    tuple val(name), path(calc, stageAs:'calc.py'), path(init), val(flags), path(aux)
+
+  output:
+    tuple val(name), path('asemd.traj'), emit: traj
+    tuple val(name), path('asemd.log'), emit: logs
+
+  script:
+    """
+    #!/usr/bin/env python
+    from calc import calc
     import re
-    import pinn
-    import tensorflow as tf
     from ase import units
     from ase.io import read
     from ase.io.trajectory import Trajectory
@@ -27,12 +81,6 @@ process aseMD {
     from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
     from ase.md.nptberendsen import NPTBerendsen
     from ase.md.nvtberendsen import NVTBerendsen
-    from tips.bias import EnsembleBiasedCalculator
-
-    # ------------ patch ase properties to write extra cols --------------------
-    from ase.calculators.calculator import all_properties
-    all_properties+=[f'{prop}_{extra}' for prop in ['energy', 'forces', 'stress'] for extra in ['avg','std','bias']]
-    # --------------------------------------------------------------------------
 
     setup = {
       'ensemble': 'nvt', # ensemble
@@ -44,9 +92,6 @@ process aseMD {
       'log-every': 20, # log interval in steps
       'pressure': 1, # pressure in bar
       'compressibility': 4.57e-4, # compressibility in bar^{-1}
-      'bias': None,
-      'kb': 0,
-      'sigma0': 0,
     }
 
     flags = {
@@ -63,20 +108,6 @@ process aseMD {
     every=int(setup['log-every'])
     pressure=float(setup['pressure'])
     compressibility=float(setup['compressibility'])
-
-    ${(model instanceof Path) ?
-    "calc = pinn.get_calc('$model')" :
-    """
-    models = ["${model.join('", "')}"]
-    calcs = [pinn.get_calc(model) for model in models]
-    if len(calcs) == 1:
-        calc =  calcs[0]
-    else:
-        calc = EnsembleBiasedCalculator(calcs,
-                                        bias=setup['bias'],
-                                        kb=float(setup['kb']),
-                                        sigma0=float(setup['sigma0']))
-    """}
 
     atoms = read("$init")
     atoms.set_calculator(calc)
