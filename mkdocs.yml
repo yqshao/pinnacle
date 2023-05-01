@@ -9,12 +9,18 @@ nav:
     - Get started: tutorial/get_started.md
     - Workflow: tutorial/workflow.md
     - Configure: tutorial/configure.md
-  - Modules:
-    - ASE: module/ase.md
-    - CP2K: module/cp2k.md
-    - LAMMPS: module/lammps.md
-    - PiNN: module/pinn.md
-    - Utils: module/utils.md
+  - Manual:
+    - Overview: manual.md
+    - Recipes:
+      - AcLe: recipe/acle.md
+    - Modules:
+      - TIPS: module/tips.md
+      - PiNN: module/pinn.md
+      - CP2K: module/cp2k.md
+      - ASE: module/ase.md
+      - DFTB+: module/dftb.md
+      - molutils: module/molutils.md
+      - LAMMPS: module/lammps.md
   - Profiles:
     - Overview: profiles/overview.md
     - Alvis: profiles/alvis.md
