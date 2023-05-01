@@ -1,52 +1,26 @@
-# Configure the workflow
+# Profiles and Configuration
 
-## The nextflow config file
+## The nextflow.config file
 
 In your workflow folder, you will find a file named `nextflow.config` that
 looks like this:
 
 ```groovy
-profiles {
-  standard {
-    params {
-      lmp_cmd = 'mpirun -np ${task.cpus} lmp_mpi'
-      cp2k_cmd = 'mpirun -np ${task.cpus} cp2k.popt'}
-    process {
-      errorStrategy='ignore'
-      withLabel: tips {container='yqshao/tips:tips-latest'}
-      withLabel: pinn {container='yqshao/tips:pinn-latest'}
-      withLabel: cp2k {container='yqshao/tips:cp2k-latest'}
-      withLabel: utils {container='yqshao/tips:utils-latest'}
-      withLabel: lammps {container='yqshao/tips:lammps-latest'}}
-    executor {
-      name = 'local'
-      cpus = 4}}}
-
-singularity {
-  enabled = true
-  autoMounts = true}
+--8<-- "nextflow.config::3"
 ```
 
-The file specifies details about your computational resources that is
-independent of the workflow, e.g., the executable for your package, queuing
-system, the resource you wish to use, etc.
+The `nextflow.config` file contains detailed specifications about the resources
+to be used by each process, it can also change default parameters in the
+workflow. The configuration file separates the definition from that of the
+workflow itself, which means the same workflow will be runnable on any resources
+supported by nextflow (from local computer, to HPC computer, to cloud-based
+platforms). Available options can be found in the nextflow [documentation].
 
-## Adding multiple profiles
+[documentation]: https://www.nextflow.io/docs/latest/config.html
 
-In the above example, the config is written to the "standard" profile. If you
-would like to share the same workflow across different computational resources,
-you can add additional profiles to the config, and switch them using the
-`-profile` argument when running, i.e.:
-
-```bash
-nextflow run main.nf -profile my_profile
-```
-
-Check the nextflow documentation for some examples.
-
-## General recommandation
-
-PiNNAcLe curates a list of [profiles]() for some of the computational resources
-we have access to. Those can be good starting points for you to adapt for your
-own need. You are also welcome to [contribute]() your config if think it will be
-useful for others.
+In PiNNAcLe, those configurations are always defined as "profiles", so that they
+can be switched with the `-profile name` option for `nextflow run`. PiNNAcLe
+curates a list of [profiles](../../profiles/overview) for some of the
+computational resources we have access to. Those can be good starting points for
+you to adapt for your own need. You are also welcome to contribute your config
+if think it will be useful for others.

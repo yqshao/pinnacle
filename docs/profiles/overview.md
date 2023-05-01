@@ -12,21 +12,25 @@ installation of libraries to run optimally on specific resource.
 
 ## Standard profile
 
+```groovy
+--8<-- "profiles/standard.config"
+```
+
 The standard profiles uses container images for its processes, most of them are
 compiled hosted on Dockerhub and automatically built (with a few exceptions).
 Below are a list of available softwares and links to the docker image, where the
 build scripts are also kept.
 
-| Software           | Version           | Dockerhub image                                      |
-|--------------------|-------------------|------------------------------------------------------|
-| packmol            | 20.14.2           | [teoroo/pinnacle:molutils]                           |
-| molptemlate        | 2.20.19           | [teoroo/pinnacle:molutils]                           |
-| awk, bc, openbabel | latest (Debian)   | [teoroo/pinnacle:molutils]                           |
-| dftbplus           | 22.2              | [teoroo/pinnacle:dftbplus]                           |
-| tips               | latest            | [teoroo/pinnacle:tips]                               |
-| pinn               | latest            | [teoroo/pinnacle:pinn]                               |
-| cp2k               | 9.1.0 (NGC) | [nvcr.io/hpc/cp2k:v9.1.0]                            |
-| lammps             | 29Sep2021         | [lammps/lammps:stable_29Sep2021_centos7_openmpi_py3] |
+| Software           | Version         | Dockerhub image                                      |
+|--------------------|-----------------|------------------------------------------------------|
+| packmol            | 20.14.2         | [teoroo/pinnacle:molutils]                           |
+| molptemlate        | 2.20.19         | [teoroo/pinnacle:molutils]                           |
+| awk, bc, openbabel | latest (Debian) | [teoroo/pinnacle:molutils]                           |
+| dftbplus           | 22.2            | [teoroo/pinnacle:dftbplus]                           |
+| tips               | latest          | [teoroo/pinnacle:pinn]                               |
+| pinn               | latest          | [teoroo/pinnacle:pinn]                               |
+| cp2k               | 9.1.0 (NGC)     | [nvcr.io/hpc/cp2k:v9.1.0]                            |
+| lammps             | 29Sep2021       | [lammps/lammps:stable_29Sep2021_centos7_openmpi_py3] |
 
 [teoroo/pinnacle:molutils]: https://hub.docker.com/r/teoroo/pinnacle/molutils
 [teoroo/pinnacle:dftbplus]: https://hub.docker.com/r/teoroo/pinnacle/dftbplus

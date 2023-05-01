@@ -6,7 +6,8 @@ site_url: https://teoroo-cmc.github.io/pinnacle/
 nav:
   - Home: index.md
   - Tutorial:
-    - First project: tutorial/first_project.md
+    - Get started: tutorial/get_started.md
+    - Workflow: tutorial/workflow.md
     - Configure: tutorial/configure.md
   - Modules:
     - ASE: module/ase.md

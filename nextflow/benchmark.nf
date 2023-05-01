@@ -7,9 +7,9 @@ params.inp = 'inputs/*'
 params.flags = '--train-steps 3e6 --batch 30 --shuffle-buffer 3000'
 params.seeds = 3
 
-include {pinnTrain} from './module/pinn.nf' addParams(publish: "$params.proj/models")
+include {train} from './module/pinn.nf' addParams(publish: "$params.proj/models")
 
-workflow wf_benchmark {
+workflow entry {
   ch_ds = Channel.fromFilePairs("${params.ds}.{yml,tfr}")
   ch_inp = Channel.fromPath("${params.inp}.yml")
   ch_seed = Channel.of(1..params.seeds.toInteger())
@@ -19,8 +19,8 @@ workflow wf_benchmark {
     | combine(ch_seed) \
     | map {ds, ds_files, inp, seed -> \
            ["$ds-${inp.baseName}-$seed", ds_files, inp, "$params.flags --seed $seed"]} \
-    | pinnTrain
+    | train
 }
 
 // default entrypoint
-workflow {wf_benchmark()}
+workflow {entry()}

@@ -9,7 +9,7 @@
     
     ``` bash
     export CUDA_VISIBLE_DEVICES=1,2,3,4
-    /sw/nextflow main.nf -entry h2o_demo -profile teoroo2
+    /sw/nf main.nf -entry h2o_demo -profile teoroo2
     ```
 
  The Teoroo2 profiel use containerized runtimes as the [standard profile], the

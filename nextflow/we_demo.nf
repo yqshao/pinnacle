@@ -7,6 +7,7 @@ inputs = [
   ['e10',     'OCC,10', '10.0'],
 ]
 
+// --8<-- [start:params]
 params.proj = 'we_demo'
 params.init_flags = '--t 0.10 --log-every 1' // 200 steps each
 params.init_seeds = 2
@@ -14,10 +15,12 @@ params.init_steps = 200000
 params.init_model = 'input/pinn/pinet-hco-adam.yml'
 params.init_time = 0.5
 params.dftb_calc = 'input/dftb/xtb.py'
+// --8<-- [end:params]
 
 dftb_inp = file(params.dftb_calc)
 geo_size = inputs.size * params.init_seeds.toInteger()
 
+// --8<-- [start:include]
 include { mol2box } from "./module/molutils.nf" addParams (publish: "$params.proj/init/pack")
 include { md } from "./module/dftb.nf" addParams (publish:"$params.proj/init/md/")
 include { convert as mkgeo } from "./module/tips.nf" addParams (publish:"$params.proj/init/ds")
@@ -26,12 +29,15 @@ include { acle } from "./acle.nf" addParams (
   publish: "$params.proj/acle",
   ref_inp: params.dftb_calc,
   geo_size: geo_size)
+// --8<-- [end:include]
 
+// --8<-- [start:wf]
 workflow entry {
   ch_inputs = Channel.fromList(inputs) \
     | combine(Channel.of(1..params.init_seeds)) \
     | map {name, tag, box, seed -> ["$name-$seed", tag, box.toFloat(), seed]} \
     | mol2box
+// --8<-- [end:wf]
 
   mol2box.out.geo \
     | map {name, geo -> [name, dftb_inp, geo, params.init_flags]} \

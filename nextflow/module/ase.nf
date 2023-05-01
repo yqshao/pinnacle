@@ -33,6 +33,7 @@ workflow sp {
 }
 
 
+// --8<-- [start:sp]
 process aseSP {
   label "$params.ase_label"
   publishDir "$params.publish/$name"
@@ -56,6 +57,7 @@ process aseSP {
     write('sp.xyz', atoms)
     """
 }
+// --8<-- [end:sp]
 
 
 process aseMD {
