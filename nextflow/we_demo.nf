@@ -14,7 +14,6 @@ params.init_seeds = 2
 params.init_steps = 200000
 params.init_model = 'input/pinn/pinet-hco-adam.yml'
 params.init_time = 0.5
-params.dftb_calc = 'input/dftb/xtb.py'
 // --8<-- [end:params]
 
 dftb_inp = file(params.dftb_calc)
@@ -27,7 +26,6 @@ include { convert as mkgeo } from "./module/tips.nf" addParams (publish:"$params
 include { convert as mkds } from "./module/tips.nf" addParams (publish:"$params.proj/init/geo")
 include { acle } from "./acle.nf" addParams (
   publish: "$params.proj/acle",
-  ref_inp: params.dftb_calc,
   geo_size: geo_size)
 // --8<-- [end:include]
 

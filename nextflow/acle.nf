@@ -19,44 +19,39 @@ def logger (msg) {
 }
 
 // entrypoint parameters ==================================================================
-params.restart_from  = false
-params.restart_conv  = false
 params.init_geo      = 'input/geo/*.xyz'
 params.init_model    = 'input/pinn/pinet-adam.yml'
 params.init_ds       = 'input/dataset/init-ds.{yml,tfr}'
 params.init_time     = 0.5
 params.init_steps    = 200000
 params.ens_size      = 1
-params.geo_size      = 6
-params.sp_points     = 10
+params.restart_from  = false
+params.restart_conv  = false
 //========================================================================================
 
-// acle parameter ========================================================================
+// acle parameters =======================================================================
 params.ref           = 'dftb' // reference (module name)
+params.ref_inp       = 'input/dftb/xtb.py'
 params.mpl           = 'pinn' // machine learning potential (module name)
+params.train_flags   = '--log-every 10000 --ckpt-every 100000 --batch 1 --max-ckpts 1 --shuffle-buffer 3000'
+params.train_init    = '--init'
+params.exit_at_max_time = false
+params.max_gen       = 40
+params.min_time      = 0.5
+params.max_time      = 1000.0
+params.md_flags      = '--ensemble nvt --dt 0.5 --log-every 100 --T 340'
+params.collect_flags = '-f asetraj --subsample uniform --nsample 10 -of idx.xyz -o ds'
+params.sp_points     = 10
+params.merge_flags   = '-f asetraj'
+params.old_flag      = '--nsample 240'
+params.new_flag      = '--psample 100'
 params.frmsetol      = 0.150
 params.ermsetol      = 0.005
 params.fmaxtol       = 2.000
 params.emaxtol       = 0.020
-params.filters       = "" // ""--filter 'peratom(energy)<-125.1' --filter 'abs(force)<100.0'"
 params.retrain_step  = 100000
-params.collect_flags = '-f asetraj --subsample uniform --nsample 10 -of idx.xyz -o ds'
-params.merge_flags   = '-f asetraj'
-params.old_flag      = '--nsample 240' // 20% new data
-params.new_flag      = '--psample 100' // 6*10 = 60 pts per iter
 params.acc_fac       = 4.0
-params.brake_fac     = 1.0 // do not slow down
-params.min_time      = 0.5
-params.max_time      = 1000.0 // 0.5 2  8 32 128 512 | stop at 1000 ps
-params.max_gen       = 40     // 0   1  2  3   4   5
-params.t_start       = 340
-params.t_end         = 340
-params.t_step        = 10
-params.ref_inp       = null
-params.train_flags   = '--log-every 10000 --ckpt-every 100000 --batch 1 --max-ckpts 1 --shuffle-buffer 3000'
-params.train_init    = '--init'
-params.md_flags      = '--ensemble nvt --dt 0.5 --log-every 100' // every 0.05 ps
-params.exit_at_max_time = false
+params.brake_fac     = 1.0
 //========================================================================================
 
 // Imports (publish directories are set here) ============================================
@@ -68,6 +63,44 @@ include { train } from "./module/${params.mpl}.nf" addParams(publish: "$params.p
 include { md } from "./module/${params.mpl}.nf" addParams(publish: "$params.publish/md")
 include { sp } from "./module/${params.ref}.nf" addParams(publish: "$params.publish/label")
 //========================================================================================
+
+// Entry point
+workflow entry {
+  logger('Starting an AcLe Loop')
+  init_ds = file(params.init_ds)
+  init_geo = file(params.init_geo)
+  geo_size = init_geo.size
+  ens_size = params.ens_size.toInteger()
+  logger("Initial dataset: ${init_ds.name};")
+  logger("Initial geometries ($geo_size) in ${params.init_geo}")
+
+  if (params.restart_from) {
+    init_gen = params.restart_from.toString()
+    init_models = file("${params.proj}/models/gen${init_gen}/*/model", type:'dir')
+    init_geo = file("${params.proj}/check/gen${init_gen}/*/*.xyz")
+    init_ds = file("${params.proj}/mixed/gen${init_gen}/mix-ds.{yml,tfr}")
+    logger("restarting from gen$init_gen ensemble of size $ens_size;")
+    init_gen = (init_gen.toInteger()+1).toString()
+  } else{
+    init_gen = '0'
+    init_models = file(params.init_model, type:'any')
+    if (!(init_models instanceof Path)) {
+      logger("restarting from an ensemble of size $ens_size;")
+    } else {
+      init_models = [init_models] * ens_size
+      logger("starting from scratch with the input $init_models.name of size $ens_size;")
+    }
+  }
+  assert ens_size == init_models.size : "ens_size ($ens_size) does not match input ($init_models.size)"
+
+  steps = params.init_steps.toInteger()
+  time = params.init_time.toFloat()
+  converge = params.restart_conv.toBoolean()
+
+  init_inp = [init_gen, init_geo, init_ds, init_models, steps, time, converge]
+  ch_inp = Channel.value(ini_inp)
+  acle(ch_inp)
+}
 
 // Main Iteration and Loops ==============================================================
 workflow acle {
@@ -119,7 +152,7 @@ workflow loop {
   nx_models \
     | combine (ch_init_t, by:0)  \
     | map {gen, models, init, t -> \
-           ["gen$gen/$init.baseName", models, init, params.md_flags+" --t $t"+" --T ${Math.max(t_end, t_start-gen.toInteger()*t_step)}"]} \
+           ["gen$gen/$init.baseName", models, init, params.md_flags+" --t $t"]} \
     | md
   md.out.traj.set {ch_trajs}
   //=======================================================================================

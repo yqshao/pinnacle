@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+include {entry as acle} from './nextflow/acle.nf'
 include {entry as benchmark} from './nextflow/benchmark.nf'
 include {entry as we_demo} from './nextflow/we_demo.nf'
 
