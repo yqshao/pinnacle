@@ -6,3 +6,4 @@ work/
 .nextflow.log*
 .ipynb_checkpoints/
 /we_demo/
+/input/dftb/sktable/*.skf
