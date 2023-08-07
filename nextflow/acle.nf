@@ -19,6 +19,7 @@ def logger (msg) {
 }
 
 // entrypoint parameters ==================================================================
+params.publish       = 'acle'
 params.init_geo      = 'input/geo/*.xyz'
 params.init_model    = 'input/pinn/pinet-adam.yml'
 params.init_ds       = 'input/dataset/init-ds.{yml,tfr}'
@@ -69,16 +70,16 @@ workflow entry {
   logger('Starting an AcLe Loop')
   init_ds = file(params.init_ds)
   init_geo = file(params.init_geo)
-  geo_size = init_geo.size
+  params.geo_size = init_geo.size
   ens_size = params.ens_size.toInteger()
   logger("Initial dataset: ${init_ds.name};")
-  logger("Initial geometries ($geo_size) in ${params.init_geo}")
+  logger("Initial geometries ($params.geo_size) in ${params.init_geo}")
 
   if (params.restart_from) {
     init_gen = params.restart_from.toString()
-    init_models = file("${params.proj}/models/gen${init_gen}/*/model", type:'dir')
-    init_geo = file("${params.proj}/check/gen${init_gen}/*/*.xyz")
-    init_ds = file("${params.proj}/mixed/gen${init_gen}/mix-ds.{yml,tfr}")
+    init_models = file("${params.publish}/models/gen${init_gen}/*/model", type:'dir')
+    init_geo = file("${params.publishj}/check/gen${init_gen}/*/*.xyz")
+    init_ds = file("${params.publish}/mixed/gen${init_gen}/mix-ds.{yml,tfr}")
     logger("restarting from gen$init_gen ensemble of size $ens_size;")
     init_gen = (init_gen.toInteger()+1).toString()
   } else{
@@ -98,7 +99,7 @@ workflow entry {
   converge = params.restart_conv.toBoolean()
 
   init_inp = [init_gen, init_geo, init_ds, init_models, steps, time, converge]
-  ch_inp = Channel.value(ini_inp)
+  ch_inp = Channel.value(init_inp)
   acle(ch_inp)
 }
 
@@ -144,9 +145,6 @@ workflow loop {
   //=======================================================================================
 
   // sampling with ensable NN =============================================================
-  t_start = params.t_start.toFloat()
-  t_end = params.t_end.toFloat()
-  t_step = params.t_step.toFloat()
   ch_inp | map {[it[0], it[1], it[5]]} | transpose | set {ch_init_t} // init and time
 
   nx_models \
