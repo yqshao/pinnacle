@@ -78,8 +78,8 @@ workflow entry {
   if (params.restart_from) {
     init_gen = params.restart_from.toString()
     init_models = file("${params.publish}/models/gen${init_gen}/*/model", type:'dir')
-    init_geo = file("${params.publishj}/check/gen${init_gen}/*/*.xyz")
-    init_ds = file("${params.publish}/mixed/gen${init_gen}/mix-ds.{yml,tfr}")
+    init_geo = file("${params.publish}/check/gen${init_gen}/*/*.xyz")
+    init_ds = file("${params.publish}/dsmix/${init_gen}/mix-ds.{yml,tfr}")
     logger("restarting from gen$init_gen ensemble of size $ens_size;")
     init_gen = (init_gen.toInteger()+1).toString()
   } else{
@@ -109,7 +109,7 @@ workflow acle {
     ch_init
 
   main:
-  loop.recurse(ch_init.first())
+  loop.recurse(ch_init)
     .until{ it[0].toInteger()>params.max_gen || (it[5]>=params.max_time.toFloat() && params.exit_at_max_time) }
 }
 

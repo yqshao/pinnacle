@@ -38,22 +38,37 @@ process cp2kGenInp {
 
   script:
   """
-  tips utils mkcp2kinp $input $ds $flags
+  tips cp2kinp $input $ds $flags
   """
 }
 
 
-workflow cp2kMD {
+workflow md {
   take:
     ch // [name, input, init, flags]
 
   main:
-    ch | cp2kGenInp // -> [name, inp]
-       | map {name, inp -> [name, inp, file(params.cp2k_aux)]}
+    ch | cp2kGenInp // -> [name, inp] \
+       | map {name, inp -> [name, inp, file(params.cp2k_aux)]} \
        | cp2k
 
   emit:
     traj = cp2k.out.traj
     logs = cp2k.out.logs
     restart = cp2k.out.restart
+}
+
+workflow sp {
+  take:
+    ch // [name, inp, geo]
+
+  main:
+    ch | map {name, inp, geo -> \
+              [name, inp, geo, '-f asetraj']} \
+       | cp2kGenInp \
+       | map {name, inp -> [name, inp, file(params.cp2k_aux)]} \
+       | cp2k
+
+  emit:
+    cp2k.out.logs
 }
