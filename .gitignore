@@ -6,3 +6,8 @@ work/
 .nextflow.log*
 .ipynb_checkpoints/
 /we_demo/
+/joss/paper.pdf
+/joss/jats/
+*.log
+*.aux
+*.pdf
