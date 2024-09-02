@@ -16,6 +16,8 @@ authors:
     orcid: 0000-0002-7167-0840
     affiliation: "1"
 
+software_repository_url: 'https://github.com/Teoroo-CMC/PiNNAcLe'
+
 affiliations:
   - name: Department of Chemistry-Ångström Laboratory, Uppsala University, Lägerhyddsvägen 1, BOX 538, 75121 Uppsala, Sweden
     index: 1
