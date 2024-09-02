@@ -1,6 +1,6 @@
 ---
-title: 'PiNNAcLe: Machine-Learning Potential Workflow Featuring the
-Adaptive Learning-On-The-Fly Algorithm'
+title: 'PiNNAcLe: Adaptive Learn-On-The-Fly Algorithm for
+Machine-Learning Potential'
 
 tags:
   - machine-learning potential
@@ -28,11 +28,11 @@ bibliography: paper.bib
 
 # Summary
 
-PiNNAcLe is an implementation of the so-called "activated learning"
-algorithm for running machine-learning potential (MLP)-based
-molecular dynamics (MD) simulations -- an emerging approach to
-simulate the large-scale and long-time dynamics of systems where
-empirical forms of the PES are difficult to obtain.
+PiNNAcLe is an implementation of our adaptive learn-on-the-fly
+algorithm for running machine-learning potential (MLP)-based molecular
+dynamics (MD) simulations -- an emerging approach to simulate the
+large-scale and long-time dynamics of systems where empirical forms of
+the PES are difficult to obtain.
 
 The algorithm aims to solve the challenge of parameterizing MLPs for
 large-time-scale MD simulations, by validating simulation results at
@@ -49,10 +49,10 @@ the workflow to a variety of computational resources.
 
 The code is published under BSD 3-Clause License, the source code and
 documentation are hosted on Github. It currently supports MLP
-generation with PiNN [@2020_ShaoHellstroemEtAl], reference
-calculations with CP2K [@2020_KuhneIannuzziEtAl] and DFTB+
-[@2020_HourahineAradiEtAl], and MD simulation with ASE
-[@2017_LarsenMortensenEtAl].
+generation with the atomistic machine learning package PiNN
+[@2020_ShaoHellstroemEtAl], electronic structure calculations with
+CP2K [@2020_KuhneIannuzziEtAl] and DFTB+ [@2020_HourahineAradiEtAl],
+and MD simulation with ASE [@2017_LarsenMortensenEtAl].
 
 # Statement of need
 
@@ -112,13 +112,24 @@ which we name as *the adaptive LOTF*.
 
 # Adaptive LOFT algorithm
 
+Iterative workflow are common in applications of MLPs. What makes the
+adaptive LOTF protocol distinct is how the timescale of the sampling
+processes are adjusted for generation according to the convergence of
+test set error in the previous generation, as highlighted in
+\autoref{fig1}.
+
+![Schematics of the adaptive LOTF scheme. Compared to the typical
+  feedback loop in either classical LOTF or AL, the labelling process
+  in adaptive LOTF directly affects the sampling
+  timescale.\label{fig1}](figs/schematics.png){width=4cm}
+
 The adaptive LOTF algorithm can be illustrated in terms of different
-data and the transformation thereof, as shown in \autoref{fig1}.
+data and the transformation thereof, as shown in \autoref{fig2}.
 
 ![Flowchart of the adaptive LOTF algorithm, Green boxes denote
   processes, red boxes denote data which are updated at each
   iteration, and blue boxes denote loops and
-  decisions.\label{fig1}](figs/flowchart.png){width=8cm}
+  decisions.\label{fig2}](figs/flowchart.png){width=8cm}
 
 The iterative sampling and training of NNP consists of a training
 process ("PiNN Train"), a sampling process ("PiNN MD"), and a
@@ -131,17 +142,6 @@ and the corresponding sampling time are updated for "PiNN MD"; the
 snapshots taken from the extrapolative sampling are updated for "CP2K
 Label".
 
-Those processes and the iterative workflow are common in applications
-of MLPs. What makes the adaptive LOTF protocol distinct is how the
-timescale of the sampling processes are adjusted for generation
-according to the convergence of test set error in the previous
-generation, as highlighted in \autoref{fig2}.
-
-![Schematics of the adaptive LOTF scheme. Compared to the typical
-  feedback loop in either classical LOTF or AL, the labelling process
-  in adaptive LOTF directly affects the sampling
-  timescale.\label{fig2}](figs/schematics.png){width=4cm}
-
 Specifically, the convergence of each sampled trajectory is validated
 against references. If all sampled trajectories are deemed as
 converged, the "PiNN MD" sampling time ("time") is multiplied by a
@@ -152,12 +152,13 @@ incorporate new reference data.
 
 # Acknowledgements
 
-This work has been supported by the Swedish Research Council (VR),
-grant 2019-05012. The authors are thankful for the funding from the
-Swedish National Strategic e-Science program eSSENCE, STandUP for
-Energy and BASE (Batteries Sweden). The simulations were performed
-on the resources provided by the Swedish National Infrastructure for
-Computing (SNIC) at C3SE and PDC.
+This work has been supported by the European Research Council (ERC)
+under the European Union's Horizon 2020 research and innovation
+programme (grant agreement No. 949012). The authors are thankful for
+the funding from the Swedish National Strategic e-Science program
+eSSENCE, STandUP for Energy and BASE (Batteries Sweden). The
+simulations were performed on the resources provided by the Swedish
+National Infrastructure for Computing (SNIC) at C3SE and PDC.
 
 We thank A. Laio for reading the manuscript and for providing helpful
 feedback. Y.S. also thanks A. Laio for hosting a research visit at the
